@@ -42,17 +42,18 @@ def main() -> int:
     for r in rows:
         pub = datetime.fromisoformat(r["published_at"][:19])
         ded.docs = [d for d in ded.docs if pub - datetime.fromisoformat(d.published_at[:19]) <= lookback]
+        # The corpus already counts this row; check() counts it again while scoring
+        # and add() keeps it, so take the corpus copy out first.
+        own = sd.make_doc(None, r["title"] or "", r["content_text"] or "", None)
+        ded.idf.n -= 1
+        ded.idf.df_stem.subtract(set(own.stems))
+        ded.idf.df_ent.subtract(own.ents)
         t0 = time.monotonic()
         key, sc = ded.check(r)
         times.append(time.monotonic() - t0)
         if key is not None:
             dropped.append((r, by_id[key], sc))
         ded.add(r)
-        # add() bumps document frequencies; the corpus already counts this row.
-        doc = ded.docs[-1]
-        ded.idf.n -= 1
-        ded.idf.df_stem.subtract(set(doc.stems))
-        ded.idf.df_ent.subtract(doc.ents)
     for r, m, sc in dropped:
         print(f"DROP id={r['id']} [{r['feed_id']} {r['published_at']}] {r['title'][:90]}")
         print(f"     kept id={m['id']} [{m['feed_id']} {m['published_at']}] {m['title'][:90]}")
