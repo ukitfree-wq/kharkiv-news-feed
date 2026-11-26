@@ -49,5 +49,9 @@ jobs:
         working-directory: engine
         run: python -m newsfeed
 
+      - name: Compact state.db (old bodies and run history only)
+        working-directory: engine
+        run: python -m ci.compact data/state.db
+
       - name: Save state and publish feed
         run: engine/ci/publish.sh

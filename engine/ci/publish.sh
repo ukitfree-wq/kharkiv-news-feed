@@ -56,9 +56,12 @@ if [[ "$need_squash" -eq 1 ]]; then
   tree=$(git write-tree)
   msg="Squash feed history: ${items} items, ${when}"
   commit=$(git commit-tree "$tree" -p "$base" -m "$msg")
-  git push --force-with-lease="main:$(git rev-parse HEAD)" origin "$commit:refs/heads/main"
-  echo "published (daily squash onto ${base:0:7}, ${count_after_base} commits folded): $msg"
-  exit 0
+  if git push --force-with-lease="main:$(git rev-parse HEAD)" origin "$commit:refs/heads/main"; then
+    echo "published (daily squash onto ${base:0:7}, ${count_after_base} commits folded): $msg"
+    exit 0
+  fi
+  echo "WARNING: daily squash push failed; publishing as a normal commit instead"
+  if [[ "$changed" -eq 0 ]]; then exit 0; fi
 fi
 
 git add news_feed.xml
