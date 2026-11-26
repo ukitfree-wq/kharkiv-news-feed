@@ -1,0 +1,31 @@
+name: Probe sources
+
+# Manual, read-only check that every source feed and article page can be
+# fetched and scraped from a GitHub runner. Does not touch state or the feed.
+on:
+  workflow_dispatch:
+    inputs:
+      per_feed:
+        description: Articles to scrape per feed
+        default: '2'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: engine/requirements.txt
+      - run: pip install --disable-pip-version-check -q -r engine/requirements.txt
+      - name: Probe
+        working-directory: engine
+        run: |
+          curl -s https://ipinfo.io/country || true
+          python -m ci.probe "${{ inputs.per_feed }}"

@@ -1,0 +1,4 @@
+engine/data/
+engine/output/
+__pycache__/
+*.pyc

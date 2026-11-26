@@ -1,0 +1,66 @@
+# Aggregator configuration. Feed URLs live in feeds.yaml (or feeds.txt).
+
+feeds_file: feeds.yaml
+# Editable list of place-name forms; an item is kept only if its title
+# contains at least one of these as a whole word.
+title_keywords_file: title_keywords.txt
+
+region:
+  language: uk
+  feed_title: "Харків — агреговані новини"
+  feed_description: "Повний текст, світлини та вбудовані відео з харківських видань."
+  feed_link: "https://infocity.kharkiv.ua/"
+  # Used only when decoding news.google.com item links (disabled example feeds).
+  hl: uk
+  gl: UA
+  ceid: "UA:uk"
+
+# Intake: only scrape/collect stories published within this many minutes of the check.
+max_age_minutes: 30
+# Clock-skew allowance: a pub date this many minutes in the future is still fresh.
+future_grace_minutes: 5
+default_timezone: Europe/Kiev
+
+# Already-collected items remain in the output feed until they age out.
+# Independent of the 30-minute intake window.
+feed_retention:
+  max_age_days: 3
+  max_items: 200
+
+window:
+  max_items: 200
+  max_age_days: 3
+  ttl_minutes: 5
+
+extraction:
+  # Never use the RSS body as the article: always scrape the publisher page.
+  include_failed: true
+  min_text_chars: 250
+  timeout_seconds: 15
+  concurrency: 5
+  max_new_articles_per_run: 150
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+  accept_language: "uk-UA,uk;q=0.9,ru;q=0.5,en;q=0.4"
+
+decode:
+  timeout_seconds: 20
+  chunk_size: 5
+  interval: 0.35
+  pause_between_chunks: 1.0
+  wave_size: 20
+
+dedup:
+  title_similarity_threshold: 87
+  content_similarity_threshold: 0.58
+  lookback_days: 14
+
+feed_self_link: "https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml"
+
+paths:
+  database: data/state.db
+  output_feed: output/feed.xml
+  # GitHub Actions copies output/feed.xml to the repo-root news_feed.xml.
+  extra_output_feed: null
+
+request:
+  rss_timeout_seconds: 20

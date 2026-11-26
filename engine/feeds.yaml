@@ -1,0 +1,56 @@
+# Feed list for the aggregator.
+# Enable or disable entries with `enabled`. Add any RSS/Atom URL.
+#
+# The five Kharkiv sources below are the active feeds.
+# Google News Poland entries are kept as disabled examples.
+
+feeds:
+  - id: infocity
+    url: https://infocity.kharkiv.ua/feed/
+    enabled: true
+    category: Харків
+    name: Інфосіті
+
+  - id: status-quo
+    url: https://www.sq.com.ua/rss/ukr/novini.xml
+    enabled: true
+    category: Харків
+    name: Status Quo
+
+  - id: 2day
+    url: https://2day.kh.ua/ua/feed
+    enabled: true
+    category: Харків
+    name: Kharkiv Today
+
+  - id: gwaramedia
+    url: https://gwaramedia.com/feed/
+    enabled: true
+    category: Харків
+    name: Ґвара Медіа
+
+  - id: mykharkov
+    url: https://mykharkov.info/feed
+    enabled: true
+    category: Харків
+    name: Мій Харків
+
+  # --- Disabled examples (Google News Poland) ---
+  # Swap enabled flags (and region in config.yaml) to use these instead.
+  - id: gn-pl-top
+    url: https://news.google.com/rss?hl=pl&gl=PL&ceid=PL:pl
+    enabled: false
+    category: TOP
+    name: Google News PL — Najważniejsze
+
+  - id: gn-pl-world
+    url: https://news.google.com/rss/headlines/section/topic/WORLD?hl=pl&gl=PL&ceid=PL:pl
+    enabled: false
+    category: WORLD
+    name: Google News PL — Świat
+
+  - id: gn-pl-nation
+    url: https://news.google.com/rss/headlines/section/topic/NATION?hl=pl&gl=PL&ceid=PL:pl
+    enabled: false
+    category: NATION
+    name: Google News PL — Kraj
