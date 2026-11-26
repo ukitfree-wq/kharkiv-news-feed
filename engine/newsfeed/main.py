@@ -54,7 +54,7 @@ from newsfeed.store import (
 
 log = logging.getLogger("newsfeed")
 
-DUP_STATUSES = {"duplicate_url", "duplicate_title", "duplicate_content", "decode_failed", "too_old", "no_date", "filtered_keyword"}
+DUP_STATUSES = {"duplicate_url", "duplicate_title", "duplicate_content", "duplicate_semantic", "decode_failed", "too_old", "no_date", "filtered_keyword"}
 
 
 def setup_logging() -> None:
@@ -248,6 +248,7 @@ def main(argv: list[str] | None = None) -> int:
         "url_duplicates": 0,
         "title_duplicates": 0,
         "content_duplicates": 0,
+        "semantic_duplicates": 0,
         "skipped_too_old": 0,
         "scraped_unreliable_date": 0,
         "dropped_page_too_old": 0,
@@ -545,8 +546,48 @@ def main(argv: list[str] | None = None) -> int:
 
     fresh.sort(key=_sort_key)
 
+    # Optional semantic same-event check (dedup.semantic.enabled). Loaded lazily, only
+    # when there is something new to check; any failure disables it for this run.
+    semantic = None
+    sem_cfg = (dedup_cfg.get("semantic") or {})
+    if fresh and sem_cfg.get("enabled"):
+        t_sem = time.monotonic()
+        try:
+            from newsfeed.semantic_dedup import SemanticDeduper
+            from newsfeed.store import semantic_reference
+
+            ref_rows, idf_rows = semantic_reference(
+                conn,
+                lookback_hours=float(sem_cfg.get("lookback_hours") or 48),
+                idf_days=lookback_days,
+            )
+            semantic = SemanticDeduper(sem_cfg, ROOT)
+            semantic.load_reference(ref_rows, idf_rows)
+            log.info(
+                "semantic dedup ready: %d reference stories, model load %.1fs, embed %.1fs",
+                len(semantic.docs), semantic.embedder.load_seconds, semantic.embed_seconds,
+            )
+        except Exception as exc:
+            log.warning("semantic dedup disabled for this run: %s", exc)
+            semantic = None
+        stats["semantic_seconds"] = round(time.monotonic() - t_sem, 2)
+
     for item in fresh:
         match, reason = _choose_existing_match(item, recent, title_th, content_th)
+        sem_scores = None
+        if match is None and semantic is not None:
+            try:
+                key, sem_scores = semantic.check(item)
+            except Exception as exc:
+                log.warning("semantic check failed for %s: %s", (item.get("title") or "")[:60], exc)
+                key, sem_scores = None, None
+            if key is not None:
+                match = next((o for o in recent if o.get("id") == key), None) or {"id": key, "title": f"id {key}"}
+                for o in semantic.docs:
+                    if o.key == key:
+                        match = dict(match, title=match.get("title") or o.title)
+                        break
+                reason = "duplicate_semantic"
         if match is not None:
             # Once-only: never replace a story that was already added.
             item["extraction_status"] = reason
@@ -555,10 +596,21 @@ def main(argv: list[str] | None = None) -> int:
                 stats["url_duplicates"] += 1
             elif reason == "duplicate_title":
                 stats["title_duplicates"] += 1
+            elif reason == "duplicate_semantic":
+                stats["semantic_duplicates"] += 1
+                sc = sem_scores or {}
+                item["skip_reason"] = (
+                    f"duplicate_semantic:of={match.get('id')};rule={sc.get('rule')};emb={sc.get('emb')};"
+                    f"kw={sc.get('kw')};ent={sc.get('ent')};anchors={','.join(sc.get('anchors') or [])}"
+                )
             else:
                 stats["content_duplicates"] += 1
-            insert_article(conn, _persist_fields(item, started))
+            row_id = insert_article(conn, _persist_fields(item, started))
             conn.commit()
+            if reason == "duplicate_semantic" and semantic is not None:
+                # Keep it as a reference so later rewrites of the same event also match.
+                item["id"] = row_id
+                semantic.add(item)
             log.info(
                 "once-only skip (%s) %s  [kept earlier: %s]",
                 reason,
@@ -570,6 +622,8 @@ def main(argv: list[str] | None = None) -> int:
         row_id = insert_article(conn, _persist_fields(item, started))
         item["id"] = row_id
         recent.append(item)
+        if semantic is not None:
+            semantic.add(item)
         stats["fresh_collected"] += 1
         conn.commit()
         log.info(
@@ -670,7 +724,7 @@ def main(argv: list[str] | None = None) -> int:
         "done in %.1fs: rss=%d seen=%d keyword_matched=%d keyword_filtered=%d filtered_new=%d purged=%d "
         "skipped_too_old=%d scraped_unreliable=%d "
         "dropped_page_too_old=%d no_date=%d fetched=%d fresh=%d ok=%d partial=%d failed=%d "
-        "url_dup=%d title_dup=%d content_dup=%d capped=%d feed_items=%d (ok=%d other=%d) near_dups=%d",
+        "url_dup=%d title_dup=%d content_dup=%d semantic_dup=%d capped=%d feed_items=%d (ok=%d other=%d) near_dups=%d",
         stats["seconds"],
         stats["rss_items"],
         stats["already_seen"],
@@ -690,6 +744,7 @@ def main(argv: list[str] | None = None) -> int:
         stats["url_duplicates"],
         stats["title_duplicates"],
         stats["content_duplicates"],
+        stats["semantic_duplicates"],
         stats["capped"],
         stats["feed_items"],
         stats["feed_ok"],

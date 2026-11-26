@@ -53,6 +53,23 @@ dedup:
   title_similarity_threshold: 87
   content_similarity_threshold: 0.58
   lookback_days: 14
+  # Semantic same-event check (newsfeed/semantic_dedup.py): catches rewrites of one story
+  # by different outlets. Needs onnxruntime/tokenizers/numpy/huggingface_hub and a
+  # ~135 MB model download (cached in model_cache_dir). Set enabled: false to turn off.
+  semantic:
+    enabled: true
+    model_cache_dir: data/models
+    lookback_hours: 48
+    max_hours_apart: 20
+    emb_min: 0.86
+    emb_strong: 0.955
+    kw_min_for_strong: 0.33
+    score_threshold: 0.62
+    anchor_emb_min: 0.86
+    anchor_kw_min: 0.20
+    anchor_max_hours: 12
+    anchor_max_df: 3
+    skip_same_source: true
 
 feed_self_link: "https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml"
 

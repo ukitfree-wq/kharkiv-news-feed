@@ -22,6 +22,7 @@ jobs:
     env:
       TZ: UTC
       PYTHONUNBUFFERED: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,6 +37,14 @@ jobs:
 
       - name: Install dependencies
         run: pip install --disable-pip-version-check -q -r engine/requirements.txt
+
+      # Semantic dedup model (Xenova/multilingual-e5-small, quantized ONNX, ~135 MB).
+      # Pinned revision in engine/config.yaml / semantic_dedup.py; bump the key if it changes.
+      - name: Cache semantic dedup model
+        uses: actions/cache@v4
+        with:
+          path: engine/data/models
+          key: hf-e5-small-q-761b726d
 
       - name: Restore state.db from the state branch
         run: |

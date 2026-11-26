@@ -344,3 +344,35 @@ conn: sqlite3.Connection, started_at: str, finished_at: str, stats_json: str) ->
         "INSERT INTO runs (started_at, finished_at, stats_json) VALUES (?, ?, ?)",
         (started_at, finished_at, stats_json),
     )
+
+
+def semantic_reference(
+    conn: sqlite3.Connection, lookback_hours: float, idf_days: int
+) -> tuple[list[dict], list[dict]]:
+    """Stories a new item is compared with by the semantic check, plus the IDF corpus.
+
+    Reference: kept stories and earlier same-event duplicates (so a cluster keeps
+    matching) published or fetched within ``lookback_hours``. Keyword-filtered items
+    are excluded so a non-feed story can never suppress a feed story.
+    IDF corpus: every stored body from the last ``idf_days`` days.
+    """
+    ref = conn.execute(
+        """
+        SELECT id, feed_id, title, content_text, published_at FROM articles
+        WHERE extraction_status IN ('ok', 'partial', 'failed',
+                                    'duplicate_title', 'duplicate_content', 'duplicate_semantic')
+          AND content_len >= 200
+          AND datetime(COALESCE(published_at, fetched_at)) >= datetime('now', ?)
+        ORDER BY datetime(published_at), id
+        """,
+        (f"-{int(lookback_hours * 60)} minutes",),
+    ).fetchall()
+    corpus = conn.execute(
+        """
+        SELECT title, content_text FROM articles
+        WHERE content_len >= 200 AND content_text IS NOT NULL
+          AND datetime(COALESCE(fetched_at, published_at)) >= datetime('now', ?)
+        """,
+        (f"-{int(idf_days)} days",),
+    ).fetchall()
+    return [dict(r) for r in ref], [dict(r) for r in corpus]
