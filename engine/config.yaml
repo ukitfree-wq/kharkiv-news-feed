@@ -70,6 +70,16 @@ dedup:
     anchor_max_hours: 12
     anchor_max_df: 3
     skip_same_source: true
+    # Incident rule: two short strike reports from different sites <= 3h apart with
+    # meaning >= 0.85, the same set of places (Jaccard >= 0.5), no conflicting specific
+    # weapon / target type / clock time, and at least one of: same specific weapon,
+    # same target type, clock times within 30 min.
+    incident_enabled: true
+    incident_emb_min: 0.85
+    incident_max_hours: 3
+    incident_time_tolerance_min: 30
+    incident_min_place_jaccard: 0.5
+    incident_max_targets: 3
 
 feed_self_link: "https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml"
 

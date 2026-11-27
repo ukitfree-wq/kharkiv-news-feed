@@ -62,3 +62,61 @@ def test_entities_skip_years_phones_and_dates():
     assert "#830" in ents and "@терех" in ents
     assert "#26" not in ents
     assert sd.extract_dates("26 листопада і 3 грудня") == {(26, 11), (3, 12)}
+
+
+# --- incident rule (short attack reports of the same strike) ---------------
+
+LANCET_A = ("27 листопада з 9:30 до 9:45 у Харкові пролунала серія вибухів. Один із прильотів припав "
+            "на багатоповерхівку в Київському районі. У будівлю влучив російський безпілотник «Ланцет».")
+LANCET_B = ("Зранку 27 листопада, близько 9:30, російські військові завдали удару по Київському району Харкова. "
+            "Зафіксовано влучання в багатоквартирний будинок. Росіяни били дроном типу \"ланцет\". "
+            "Як писав сайт, перед цим зранку атакували Шевченківський район, пошкоджена автозаправка.")
+AZS = ("27 листопада о 7:45 росіяни атакували 2 райони Харкова: Шевченківський та Київський. "
+       "У Шевченківському районі приліт був по автозаправній станції.")
+ROUNDUP = ("Внаслідок обстрілів Харкова загинули четверо людей. Удари були по Новобаварському, Слобідському "
+           "та Індустріальному районах, пошкоджено багатоповерхівку, АЗС і школу.")
+ONE_STRIKE = "Вранці безпілотник влучив у багатоповерхівку в Новобаварському районі Харкова, загинули двоє."
+
+
+def _slots(title, text):
+    return sd.incident_slots(title, sd.clean_text(text))
+
+
+def test_incident_same_strike_matches():
+    a = _slots("Росіяни вдарили «Ланцетом» по багатоповерхівці в Харкові", LANCET_A)
+    b = _slots("Російська армія атакувала будинок у Харкові \"ланцетом\"", LANCET_B)
+    assert "lancet" in a["weapons"] and "lancet" in b["weapons"]
+    # The background recap (AZS strike) must not leak into the slots.
+    assert "fuel" not in b["targets"] and "шевченків" not in b["places"]
+    ok, why = sd.incident_match(a, b, sd.settings({}))
+    assert ok and "time" in why and "weapon" in why
+
+
+def test_incident_different_strikes_same_day_do_not_match():
+    s = sd.settings({})
+    lancet = _slots("Росіяни вдарили «Ланцетом» по багатоповерхівці в Харкові", LANCET_A)
+    azs = _slots("Вранці росіяни вдарили по АЗС у Харкові", AZS)
+    ok, why = sd.incident_match(lancet, azs, s)
+    assert not ok and why in {"target_conflict", "time_conflict", "place_mismatch"}
+
+
+def test_incident_roundup_vs_single_strike_and_non_attack_title():
+    s = sd.settings({})
+    one = _slots("Російський дрон влучив у багатоповерхівку", ONE_STRIKE)
+    roundup = _slots("Через обстріли загинули четверо людей", ROUNDUP)
+    assert sd.incident_match(one, roundup, s) == (False, "place_mismatch")
+    outage = _slots("Частина Харкова залишилась без світла", ONE_STRIKE)
+    assert sd.incident_match(one, outage, s) == (False, "not_attack")
+
+
+def test_incident_rule_in_score_pair_respects_window():
+    a = _doc(1, "Росіяни вдарили «Ланцетом» по багатоповерхівці в Харкові", LANCET_A * 2,
+             "2026-11-27 07:59:00", "status-quo", [1, 0])
+    b = _doc(2, "Російська армія атакувала будинок у Харкові \"ланцетом\"", LANCET_B * 2,
+             "2026-11-27 08:00:00", "2day", _emb_with_cos(0.89))
+    # Tiny test corpus makes every shared word "rare"; switch the anchor rule off here.
+    s = sd.settings({"anchor_emb_min": 0.99})
+    sc = sd.score_pair(b, a, _idf(a, b), s)
+    assert sc["duplicate"] and sc["rule"].startswith("incident:")
+    b.published_at = "2026-11-27 12:00:00"  # 4h later: outside incident_max_hours
+    assert not sd.score_pair(b, a, _idf(a, b), s)["rule"].startswith("incident")

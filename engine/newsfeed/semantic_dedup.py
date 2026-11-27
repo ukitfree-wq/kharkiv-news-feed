@@ -21,6 +21,11 @@ Decision (thresholds in config.yaml -> dedup.semantic), calibrated on state.db:
   or anchor:           emb >= anchor_emb_min, kw >= anchor_kw_min, <= anchor_max_hours apart and
                        shared rare facts (df <= anchor_max_df): a number with >= 3 digits, or
                        >= 2 rare features incl. a number, or >= 2 rare names with kw >= 0.45.
+  or incident:         short strike reports (attack word in both headlines, not daily
+                       round-ups) <= incident_max_hours apart, emb >= incident_emb_min, the
+                       same places (Jaccard >= 0.5), no conflicting specific weapon, target
+                       type or clock time, and a shared weapon / target / time (see
+                       incident_slots / incident_match).
 
 The model is downloaded once from the Hugging Face hub and cached in
 ``model_cache_dir`` (cache that directory on CI).
@@ -82,14 +87,181 @@ def _norm(text: str) -> str:
     return text.replace("ʼ", "’").replace("'", "’")
 
 
+# Everything after these markers is an unrelated teaser block appended by the source.
+TAIL_MARKERS_RE = re.compile(r"^вибір редакції\b", re.IGNORECASE)
+
+
 def clean_text(text: str) -> str:
     lines = []
     for line in (text or "").splitlines():
         s = line.strip()
+        if TAIL_MARKERS_RE.match(s):
+            break
         if not s or BOILERPLATE_RE.match(s):
             continue
         lines.append(s)
     return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Incident slots for short attack / shelling reports.
+# Rewrites of one strike rarely share wording, but they share the same
+# place + weapon / target / clock time within a short window. Different strikes
+# on the same day differ in at least one of these, which acts as a veto.
+
+ATTACK_RE = re.compile(
+    r"(вдари|удар|атакув|атаку|атак[аиуі]|обстріл|обстрілю|прилет|приліт|прильот|влуча|влучи|влучан|поціли|вибух|уражен)",
+    re.IGNORECASE,
+)
+SUMMARY_RE = re.compile(
+    r"(за добу|протягом доби|минулої доби|за минулу добу|упродовж доби|за тиждень|за минулий тиждень|протягом дня)",
+    re.IGNORECASE,
+)
+BACKGROUND_RE = re.compile(
+    r"^(як писав|як повідомля|нагадаємо|раніше|нагадуємо|також раніше|до цього|перед цим|окрім того, раніше)",
+    re.IGNORECASE,
+)
+# Weapon classes: specific ones conflict when disjoint; "drone" is generic.
+WEAPONS = {
+    "lancet": r"ланцет",
+    "shahed": r"шахед|герань|герберa|гербер",
+    "molniya": r"молні[яїюєй]",
+    "banderol": r"бандерол",
+    "fpv": r"\bfpv|\bфпв",
+    "kab": r"\bкаб(?:и|ами|ом|ів)?\b|авіабомб|керован\w* авіа",
+    "missile": r"ракет|іскандер|\bс-300|\bс-400|балістик",
+    "mlrs": r"рсзв|\bград(?:ом|у|и)?\b|ураган|смерч",
+    "artillery": r"артилер|мінометн|міномет",
+}
+GENERIC_WEAPON = "drone"
+GENERIC_WEAPON_RE = re.compile(r"дрон|безпілот|бпла|бпак", re.IGNORECASE)
+TARGETS = {
+    "fuel": r"\bазс\b|заправ",
+    "highrise": r"багатоповерх|багатоквартир|висотк",
+    "house": r"приватн\w* (?:житлов\w* )?будин|приватн\w* сектор|приватн\w* садиб",
+    "enterprise": r"підприєм|завод|склад",
+    "energy": r"енергооб|підстанц|енергетичн\w* інфрастр|тец\b",
+    "school": r"школ|ліце|навчальн\w* заклад|виш|університет|інститут",
+    "vehicle": r"автомоб|автівк|маршрутк|автобус|\bавто\b|легковик",
+    "market": r"ринок|ринку",
+    "shop": r"магазин|супермаркет",
+    "railway": r"залізни|потяг|поїзд|вокзал",
+    "medical": r"лікарн|медичн\w* заклад|амбулатор",
+}
+WEAPON_RES = {k: re.compile(v, re.IGNORECASE) for k, v in WEAPONS.items()}
+TARGET_RES = {k: re.compile(v, re.IGNORECASE) for k, v in TARGETS.items()}
+CLOCK_RE = re.compile(
+    r"(?:\bо|\bоб|\bблизько|\bприблизно|\bз|\bвід|\bпісля|\bу|\bв)\s+(\d{1,2})[:.](\d{2})(?!\d)",
+    re.IGNORECASE,
+)
+# Kharkiv city districts and region towns (stems); extended by config incident_places.
+DEFAULT_PLACES = [
+    "шевченків", "київськ", "салтівськ", "немишлянськ", "індустріальн", "слобідськ",
+    "основ’янськ", "холодногірськ", "новобаварськ",
+    "лозов", "ізюм", "чугуїв", "чугуєв", "куп’янськ", "люботин", "златопол", "златопіл", "мереф",
+    "балакл", "валк", "вовчанськ", "дергач", "зміїв", "красноград", "південн", "богодух", "барвінков",
+    "золочів", "золочев", "солоницівк", "пісочин", "безлюдівк", "циркун", "малоданилівк",
+]
+VILLAGE_RE = re.compile(
+    r"(?:\bсел[оіаи]|\bселищ[еіаи]|\bбіля|\bпоблизу|\bнеподалік|\bмісті|\bмісто)\s+([A-ZА-ЯІЇЄҐ][\w’'ʼ-]+)"
+    r"|([A-ZА-ЯІЇЄҐ][\w’'ʼ-]+(?:ській|ського|ська|ську))\s+(?:громад|район)",
+)
+
+
+def _sentences(text: str) -> list[str]:
+    return [p.strip() for p in re.split(r"(?<=[.!?])\s+|\n+", text or "") if p.strip()]
+
+
+def incident_lead(title: str, text: str, chars: int = 700) -> str:
+    """Title + the first sentences of the report, without background recaps."""
+    keep = []
+    total = 0
+    for sent in _sentences(text):
+        if BACKGROUND_RE.match(sent):
+            # Recaps of earlier events come last; everything after is background too.
+            break
+        keep.append(sent)
+        total += len(sent)
+        if total >= chars:
+            break
+    return _norm(title) + ". " + _norm(" ".join(keep))
+
+
+def incident_slots(title: str, text: str, places: list[str] | None = None) -> dict:
+    lead = incident_lead(title, text)
+    low = lead.casefold().replace("'", "’")
+    weapons = {k for k, rx in WEAPON_RES.items() if rx.search(low)}
+    if GENERIC_WEAPON_RE.search(low):
+        weapons.add(GENERIC_WEAPON)
+    targets = {k for k, rx in TARGET_RES.items() if rx.search(low)}
+    plc = set()
+    lexicon = places or DEFAULT_PLACES
+    for stem_ in lexicon:
+        if re.search(r"\b" + re.escape(stem_), low):
+            plc.add(stem_)
+    for m in VILLAGE_RE.finditer(lead):
+        word = (m.group(1) or m.group(2) or "").casefold().replace("'", "’")
+        if not word or word.startswith("харк"):
+            continue
+        known = next((st for st in lexicon if word.startswith(st)), None)
+        plc.add(known or word[:6])
+    times = set()
+    for m in CLOCK_RE.finditer(lead):
+        h, mi = int(m.group(1)), int(m.group(2))
+        if h < 24 and mi < 60:
+            times.add(h * 60 + mi)
+    return {
+        # The headline itself must be about a strike (not an outage or digest story).
+        "attack": bool(ATTACK_RE.search(_norm(title).casefold())),
+        "summary": bool(SUMMARY_RE.search(low)),
+        "weapons": weapons,
+        "targets": targets,
+        "places": plc,
+        "times": times,
+    }
+
+
+def incident_match(a: dict, b: dict, s: dict) -> tuple[bool, str]:
+    """Same strike? Returns (match, reason or veto)."""
+    if not (a["attack"] and b["attack"]):
+        return False, "not_attack"
+    if a["summary"] or b["summary"]:
+        return False, "summary"
+    shared_places = a["places"] & b["places"]
+    if not shared_places:
+        return False, "no_shared_place"
+    # The two reports must be about the same set of places (a multi-district round-up
+    # is not the same story as one strike it mentions).
+    if len(shared_places) / len(a["places"] | b["places"]) < float(s["incident_min_place_jaccard"]):
+        return False, "place_mismatch"
+    spec_a = a["weapons"] - {GENERIC_WEAPON}
+    spec_b = b["weapons"] - {GENERIC_WEAPON}
+    if spec_a and spec_b and not (spec_a & spec_b):
+        return False, "weapon_conflict"
+    if a["targets"] and b["targets"] and not (a["targets"] & b["targets"]):
+        return False, "target_conflict"
+    tol = float(s["incident_time_tolerance_min"])
+    if a["times"] and b["times"]:
+        gap = min(abs(x - y) for x in a["times"] for y in b["times"])
+        if gap > tol:
+            return False, "time_conflict"
+        time_ok = True
+    else:
+        time_ok = False
+    support = []
+    if spec_a & spec_b:
+        support.append("weapon")
+    max_t = int(s["incident_max_targets"])
+    if (a["targets"] & b["targets"]) and len(a["targets"]) <= max_t and len(b["targets"]) <= max_t:
+        support.append("target")
+    if time_ok:
+        support.append("time")
+    if not support:
+        # Shared places alone are not enough: round-ups of a day's strikes share them too.
+        return False, "no_support"
+    if len(shared_places) >= 2:
+        support.append("places")
+    return True, "+".join(["place"] + support)
 
 
 def stem(word: str) -> str:
@@ -154,6 +326,7 @@ class Doc:
     stems: Counter = field(default_factory=Counter)
     ents: set = field(default_factory=set)
     dates: set = field(default_factory=set)
+    slots: dict = field(default_factory=dict)
     emb: object = None
 
 
@@ -164,6 +337,7 @@ def make_doc(key, title: str, text: str, published_at: str | None, source: str =
     doc.stems = Counter(content_stems(doc.title) * 2 + content_stems(body))
     doc.ents = extract_entities(doc.title, body)
     doc.dates = extract_dates(doc.title + "\n" + body)
+    doc.slots = incident_slots(doc.title, body)
     return doc
 
 
@@ -268,6 +442,15 @@ DEFAULTS = {
     "anchor_max_hours": 12,
     "anchor_max_df": 3,
     "anchor_kw_for_names_only": 0.45,
+    # Incident rule: short attack reports of the same strike (place + weapon/target/time).
+    "incident_enabled": True,
+    "incident_emb_min": 0.85,
+    "incident_max_hours": 3,
+    "incident_time_tolerance_min": 30,
+    "incident_min_place_jaccard": 0.5,
+    # A report listing more damaged target types than this is a round-up; its targets
+    # do not count as evidence of the same strike.
+    "incident_max_targets": 3,
 }
 
 
@@ -377,6 +560,15 @@ def score_pair(a: Doc, b: Doc, idf: Idf, s: dict) -> dict:
             )
         ):
             rule = "anchor"
+        elif (
+            s.get("incident_enabled")
+            and emb >= float(s["incident_emb_min"])
+            and hours is not None
+            and hours <= float(s["incident_max_hours"])
+        ):
+            ok, why = incident_match(a.slots, b.slots, s)
+            if ok:
+                rule = "incident:" + why
     return {
         "emb": round(emb, 4),
         "kw": round(kw, 4),

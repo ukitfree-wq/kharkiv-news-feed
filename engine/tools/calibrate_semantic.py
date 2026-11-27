@@ -22,6 +22,8 @@ def main() -> int:
     ap.add_argument("--days", type=float, default=3)
     ap.add_argument("--min-emb", type=float, default=0.84)
     ap.add_argument("--all", action="store_true")
+    ap.add_argument("--with-dups", action="store_true",
+                    help="also include rows already skipped as duplicates (full history)")
     ap.add_argument("--db", default=None, help="state.db to read (opened read-only)")
     args = ap.parse_args()
     cfg = load_config()
@@ -33,9 +35,11 @@ def main() -> int:
         dict(r)
         for r in conn.execute(
             """SELECT id, feed_id, published_at, extraction_status, title, content_text FROM articles
-               WHERE extraction_status IN ('ok','partial','failed','filtered_keyword')
+               WHERE extraction_status IN ({statuses})
                  AND content_len >= 200 AND datetime(published_at) >= datetime('now', ?)
-               ORDER BY datetime(published_at), id""",
+               ORDER BY datetime(published_at), id""".format(statuses=(
+                "'ok','partial','failed','filtered_keyword'"
+                + (",'duplicate_semantic','duplicate_title','duplicate_content'" if args.with_dups else ""))),
             (f"-{int(args.days * 24)} hours",),
         )
     ]
