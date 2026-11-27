@@ -36,6 +36,8 @@ jobs:
           NEWSFEED_CONFIG: ${{ inputs.config }}
           PER_FEED: ${{ inputs.per_feed }}
           EXTRA: ${{ inputs.extra }}
+          PROXY_048_URL: ${{ secrets.PROXY_048_URL }}
+          PROXY_048_KEY: ${{ secrets.PROXY_048_KEY }}
         run: |
           curl -s https://ipinfo.io/country || true
           # shellcheck disable=SC2086

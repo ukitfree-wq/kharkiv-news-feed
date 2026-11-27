@@ -11,6 +11,7 @@ from urllib.parse import urlparse
 import feedparser
 import requests
 
+from newsfeed import proxy as relay
 from newsfeed.dedup import is_google_news_url
 from newsfeed.store import get_feed_meta, upsert_feed_meta
 
@@ -82,6 +83,7 @@ def fetch_feeds(
             "Accept-Language": accept_language,
         }
     )
+    relay.install(session)
     items: list[dict[str, Any]] = []
     seen_links: set[str] = set()
     stats = {"feeds_ok": 0, "feeds_not_modified": 0, "feeds_failed": 0, "items": 0}

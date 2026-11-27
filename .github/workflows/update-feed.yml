@@ -110,8 +110,13 @@ jobs:
           test -s engine/data/odesa/state.db
           ls -l engine/data/odesa/state.db
 
+      # 048.ua answers 403 to runners; when both secrets are set its feed, API and
+      # pages go through the PHP relay (engine/ci/feedproxy-048.php). Unset = direct.
       - name: Fetch, scrape, filter, dedup, build feed
         working-directory: engine
+        env:
+          PROXY_048_URL: ${{ secrets.PROXY_048_URL }}
+          PROXY_048_KEY: ${{ secrets.PROXY_048_KEY }}
         run: python -m newsfeed
 
       - name: Compact state.db (old bodies and run history only)

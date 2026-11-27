@@ -37,3 +37,14 @@ and in `dedup.semantic`: `incident_places`, `incident_city_prefixes`, `incident_
 `incident_targets_extra`, `entity_stop_extra`, `digest_title_re`, `topic_rules`.
 `engine/ci/publish.sh` takes `STATE_BRANCH`, `STATE_DB`, `FEED_SRC`, `FEED_DEST`, `FEED_LABEL`
 and `SQUASH` (only the Kharkiv job squashes the daily history).
+
+### 048.ua relay
+
+www.048.ua returns HTTP 403 to GitHub Actions runners. `engine/ci/feedproxy-048.php` is a
+small PHP relay for the user's own web hosting: it only fetches `https://www.048.ua/…` and
+`https://048.ua/…`, requires the shared key in the `X-Proxy-Key` header (the copy in the repo has
+a placeholder and refuses every request), caches responses for 60 s and gzips its replies.
+When the Actions secrets `PROXY_048_URL` (full URL of the uploaded PHP file) and `PROXY_048_KEY`
+are both set, the Odesa job routes 048.ua's feed, JSON API and article pages through it
+(`engine/newsfeed/proxy.py`); otherwise it fetches directly. Image URLs in the feed stay on
+`s.048.ua`.

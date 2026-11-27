@@ -16,6 +16,7 @@ import trafilatura
 from bs4 import BeautifulSoup, NavigableString, Tag
 from trafilatura.settings import use_config
 
+from newsfeed import proxy as relay
 from newsfeed.sites import profile_for
 
 log = logging.getLogger(__name__)
@@ -92,7 +93,7 @@ def _session(user_agent: str, accept_language: str) -> requests.Session:
             "Cache-Control": "no-cache",
         }
     )
-    return sess
+    return relay.install(sess)
 
 
 def guess_image_type(url: str) -> str:

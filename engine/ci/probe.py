@@ -16,6 +16,7 @@ import requests
 
 from newsfeed.config import load_config
 from newsfeed.extract import _session, extract_article
+from newsfeed.proxy import install as install_relay
 from newsfeed.sites import apply_overrides
 
 
@@ -31,6 +32,7 @@ def main() -> int:
         "Accept": "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
         "Accept-Language": ex["accept_language"],
     })
+    install_relay(rss)
     page = _session(ex["user_agent"], ex["accept_language"])
     failures = 0
     feeds = [f for f in cfg["feeds"] if f["enabled"]]
