@@ -9,10 +9,31 @@
 <link>https://infocity.kharkiv.ua/</link>
 <description>Повний текст, світлини та вбудовані відео з харківських видань.</description>
 <language>uk</language>
-<lastBuildDate>Fri, 27 Nov 2026 09:55:59 +0000</lastBuildDate>
+<lastBuildDate>Fri, 27 Nov 2026 10:01:43 +0000</lastBuildDate>
 <ttl>5</ttl>
 <generator>pl-news-feed/1.0</generator>
 <atom:link href="https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml" rel="self" type="application/rss+xml"/>
+<item>
+<title>Росіяни обстріляли гаражний кооператив у передмісті Харкова</title>
+<link>https://sq.com.ua/ukr/novini/27.11.2026/rosiyani-obstrilyali-garaznii-kooperativ-u-peredmisti-xarkova</link>
+<guid isPermaLink="true">https://sq.com.ua/ukr/novini/27.11.2026/rosiyani-obstrilyali-garaznii-kooperativ-u-peredmisti-xarkova</guid>
+<pubDate>Fri, 27 Nov 2026 09:54:00 +0000</pubDate>
+<dc:creator>Status Quo</dc:creator>
+<source url="https://sq.com.ua/ukr/novini/27.11.2026/rosiyani-obstrilyali-garaznii-kooperativ-u-peredmisti-xarkova">Status Quo</source>
+<category>Харків</category>
+<category>extraction:ok</category>
+<description><![CDATA[<p><img alt="" src="https://www.sq.com.ua/img/news/2026/11/27/photo_2026-11-27_09-35-36-sq.jpg"/></p>
+<div><p>27 листопада близько 2-ї години ночі російський безпілотник атакував Дергачі. Дрон впав на територію гаражного кооперативу, пошкодивши гаражі, паркани, а також приватний будинок поблизу. Обійшлося без постраждалих.</p>
+<p>За попередньою інформацією, для атаки росіяни використали безпілотник «Молнія».</p>
+<p><strong>Джерело:</strong> <a href="https://t.me/zadorenko_v/20057">ТГ-канал В'ячеслава Задоренка</a></p></div>]]></description>
+<content:encoded><![CDATA[<p><img alt="" src="https://www.sq.com.ua/img/news/2026/11/27/photo_2026-11-27_09-35-36-sq.jpg"/></p>
+<div><p>27 листопада близько 2-ї години ночі російський безпілотник атакував Дергачі. Дрон впав на територію гаражного кооперативу, пошкодивши гаражі, паркани, а також приватний будинок поблизу. Обійшлося без постраждалих.</p>
+<p>За попередньою інформацією, для атаки росіяни використали безпілотник «Молнія».</p>
+<p><strong>Джерело:</strong> <a href="https://t.me/zadorenko_v/20057">ТГ-канал В'ячеслава Задоренка</a></p></div>]]></content:encoded>
+<enclosure url="https://www.sq.com.ua/img/news/2026/11/27/photo_2026-11-27_09-35-36-sq.jpg" type="image/jpeg" length="0"/>
+<media:thumbnail url="https://www.sq.com.ua/img/news/2026/11/27/photo_2026-11-27_09-35-36-sq.jpg"/>
+<media:content url="https://www.sq.com.ua/img/news/2026/11/27/photo_2026-11-27_09-35-36-sq.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
 <title>Російські війська просунулися поблизу Петропавлівки на Харківщині</title>
 <link>https://2day.kh.ua/ua/kharkow/rosiyski-viyska-prosunulysya-poblyzu-petropavlivky-na-kharkivshchyni</link>
