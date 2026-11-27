@@ -9,7 +9,7 @@
 <link>https://infocity.kharkiv.ua/</link>
 <description>Повний текст, світлини та вбудовані відео з харківських видань.</description>
 <language>uk</language>
-<lastBuildDate>Fri, 27 Nov 2026 12:51:21 +0000</lastBuildDate>
+<lastBuildDate>Fri, 27 Nov 2026 12:56:03 +0000</lastBuildDate>
 <ttl>5</ttl>
 <generator>pl-news-feed/1.0</generator>
 <atom:link href="https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml" rel="self" type="application/rss+xml"/>
@@ -5087,49 +5087,6 @@
 <enclosure url="https://pwg.sq.com.ua/upload/2026/07/09/20260709191847-d758fe8c.jpg" type="image/jpeg" length="0"/>
 <media:thumbnail url="https://pwg.sq.com.ua/upload/2026/07/09/20260709191847-d758fe8c.jpg"/>
 <media:content url="https://pwg.sq.com.ua/upload/2026/07/09/20260709191847-d758fe8c.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-<title>У Харкові через порив водопроводу припинено рух трамваїв кількома вулицями</title>
-<link>https://sq.com.ua/ukr/novini/24.11.2026/u-xarkovi-cerez-proriv-vodoprovodu-zaboroneno-proyizd-tramvayiv-kilkoma-vulicyami</link>
-<guid isPermaLink="true">https://sq.com.ua/ukr/novini/24.11.2026/u-xarkovi-cerez-proriv-vodoprovodu-zaboroneno-proyizd-tramvayiv-kilkoma-vulicyami</guid>
-<pubDate>Tue, 24 Nov 2026 12:55:00 +0000</pubDate>
-<dc:creator>Status Quo</dc:creator>
-<source url="https://sq.com.ua/ukr/novini/24.11.2026/u-xarkovi-cerez-proriv-vodoprovodu-zaboroneno-proyizd-tramvayiv-kilkoma-vulicyami">Status Quo</source>
-<category>Харків</category>
-<category>extraction:ok</category>
-<description><![CDATA[<p><img alt="" src="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_12-01-25-sq.jpg"/></p>
-<div><p>У Харкові через підтоплення внаслідок прориву водопроводу тимчасово не курсують трамваї на кількох вулицях.</p>
-<p>Де обмежено рух:</p>
-<ul>
-<li>вул. Віринська;</li>
-<li>вул. Мойсеївська;</li>
-<li>вул. Шевченка, </li>
-<li>вул. Нескорених від вул. Академіка Павлова до вул. Шевченка.</li>
-</ul>
-<p>Через це трамваї №16 і 16А курсують так: </p>
-<ul>
-<li>розворотне коло «Салтівське» - пр. Тракторобудівників - вул. Нескорених - вул. Академіка Павлова - Пр. Героїв Харкова - майдан Захисників України - вул. Молочна - вул. Георгія Тарасенка - вул. Добровольців.</li>
-</ul>
-<p>Також курсує тимчасовий автобус від автостанції «Салтівська» до майдану Конституції через вул. Нескорених та вул. Шевченка.</p>
-<p><strong>Джерело:</strong> <a href="https://t.me/citykharkivua/98238">Харківська міськрада</a></p></div>]]></description>
-<content:encoded><![CDATA[<p><img alt="" src="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_12-01-25-sq.jpg"/></p>
-<div><p>У Харкові через підтоплення внаслідок прориву водопроводу тимчасово не курсують трамваї на кількох вулицях.</p>
-<p>Де обмежено рух:</p>
-<ul>
-<li>вул. Віринська;</li>
-<li>вул. Мойсеївська;</li>
-<li>вул. Шевченка, </li>
-<li>вул. Нескорених від вул. Академіка Павлова до вул. Шевченка.</li>
-</ul>
-<p>Через це трамваї №16 і 16А курсують так: </p>
-<ul>
-<li>розворотне коло «Салтівське» - пр. Тракторобудівників - вул. Нескорених - вул. Академіка Павлова - Пр. Героїв Харкова - майдан Захисників України - вул. Молочна - вул. Георгія Тарасенка - вул. Добровольців.</li>
-</ul>
-<p>Також курсує тимчасовий автобус від автостанції «Салтівська» до майдану Конституції через вул. Нескорених та вул. Шевченка.</p>
-<p><strong>Джерело:</strong> <a href="https://t.me/citykharkivua/98238">Харківська міськрада</a></p></div>]]></content:encoded>
-<enclosure url="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_12-01-25-sq.jpg" type="image/jpeg" length="0"/>
-<media:thumbnail url="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_12-01-25-sq.jpg"/>
-<media:content url="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_12-01-25-sq.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
