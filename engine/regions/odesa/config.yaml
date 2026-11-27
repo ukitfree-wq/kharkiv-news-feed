@@ -1,0 +1,135 @@
+# Odesa city + Odesa oblast feed. Same engine and rules as the Kharkiv feed
+# (engine/config.yaml); only the region-specific parts differ.
+# Run from engine/:  NEWSFEED_CONFIG=regions/odesa/config.yaml python -m newsfeed
+
+feeds_file: regions/odesa/feeds.yaml
+# The user's keyword list (exact). An item is kept only if its title contains
+# one of these as a whole word (Unicode-aware; apostrophes and hyphens count as
+# word boundaries, so "Рені" never matches inside "тренінг").
+title_keywords_file: regions/odesa/title_keywords.txt
+# Narrow exclusion phrases (e.g. "Південний Буг", "Подільський район Києва").
+title_keyword_guards_file: regions/odesa/title_guards.txt
+
+region:
+  language: uk
+  feed_title: "Одеса та Одещина — агреговані новини"
+  feed_description: "Повний текст, світлини та вбудовані відео з одеських і обласних видань."
+  feed_link: "https://www.048.ua/"
+  hl: uk
+  gl: UA
+  ceid: "UA:uk"
+
+max_age_minutes: 30
+future_grace_minutes: 5
+default_timezone: Europe/Kiev
+
+feed_retention:
+  max_age_days: 3
+  max_items: 200
+
+window:
+  max_items: 200
+  max_age_days: 3
+  ttl_minutes: 5
+
+extraction:
+  include_failed: true
+  min_text_chars: 250
+  timeout_seconds: 15
+  concurrency: 5
+  max_new_articles_per_run: 150
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+  accept_language: "uk-UA,uk;q=0.9,ru;q=0.5,en;q=0.4"
+
+decode:
+  timeout_seconds: 20
+  chunk_size: 5
+  interval: 0.35
+  pause_between_chunks: 1.0
+  wave_size: 20
+
+# Suspilne's national all.rss is shared with the Kharkiv feed: here keep only
+# the Odesa newsroom (and national sections), drop every other regional newsroom.
+site_overrides:
+  suspilne.media:
+    name: Суспільне Одеса
+    drop_first_path_segments: [cherkasy, chernihiv, chernivtsi, crimea, dnipro, donbas, donetsk,
+      ivano-frankivsk, kharkiv, kherson, khmelnytskiy, khmelnytskyi, kropyvnytskiy, kropyvnytskyi,
+      kyiv, luhansk, lutsk, lviv, mykolaiv, poltava, rivne, sumy, ternopil, uzhhorod, vinnytsia,
+      zaporizhzhia, zhytomyr]
+    truncate_at_re: "^(читайте нас у|стежте за головними новинами)\\b"
+    strip_comments: true
+
+dedup:
+  # Same thresholds as Kharkiv (calibrated there; see engine/config.yaml).
+  title_similarity_threshold: 87
+  content_similarity_threshold: 0.58
+  lookback_days: 14
+  semantic:
+    enabled: true
+    model_cache_dir: data/models
+    lookback_hours: 48
+    max_hours_apart: 20
+    emb_min: 0.86
+    emb_strong: 0.955
+    kw_min_for_strong: 0.33
+    score_threshold: 0.62
+    # Odesa: stricter than Kharkiv (0.86). In the 24 h dry run the anchor rule's only
+    # hits were false positives at emb 0.88 (two different Holodomor-day stories
+    # sharing "93 роковини").
+    anchor_emb_min: 0.89
+    anchor_kw_min: 0.20
+    anchor_max_hours: 12
+    anchor_max_df: 3
+    skip_same_source: true
+    incident_enabled: true
+    incident_emb_min: 0.85
+    incident_max_hours: 3
+    incident_time_tolerance_min: 30
+    incident_min_place_jaccard: 0.5
+    incident_max_targets: 3
+    # Daily round-ups are never merged with (or instead of) single stories.
+    digest_title_re: "^(?:одеса сьогодні|\\d+-й день війни|хроніка подій|головне за (?:день|тиждень)|новини одеси за|дайджест)"
+    # The same day's weather forecast from different sites is one story.
+    topic_rules:
+      - name: weather
+        title_re: "^(?:(?:яка|якою)\\s+(?:буде\\s+)?)?погод[аиі]\\b|прогноз погоди"
+        max_hours: 12
+    # --- Odesa lexicon for the incident rule (stems, matched at word start) ---
+    incident_city_prefixes: ["одес", "одещ"]
+    incident_places: [
+      # Odesa city districts and well-known neighbourhoods
+      "приморськ", "київськ", "хаджибейськ", "малинівськ", "пересипськ", "суворовськ",
+      "пересип", "молдаванк", "слобідк", "черемушк", "таїров", "аркаді", "фонтан", "лузанівк",
+      "котовськ", "люстдорф", "чорноморк",
+      # Oblast towns, hromadas and ports
+      "ізмаїл", "ізмаїльщ", "чорноморськ", "іллічівськ", "білгород", "аккерман", "заток",
+      "подільськ", "південн", "южн", "рені", "ренійськ", "кілі", "кілійськ", "вилков", "вилківськ",
+      "балт", "роздільн", "болград", "арциз", "біляїв", "березів", "татарбунар", "теплодар",
+      "кодим", "ананьї", "ананьєв", "овідіопол", "великодолинськ", "фонтанськ", "усатов", "усатів",
+      "авангард", "лиманськ", "любашів", "окнян", "окни", "саврань", "захарів", "ширяїв",
+      "сергіївк", "курортн", "бессараб", "буджак", "зміїн", "дунаї", "дунаю",
+    ]
+    # Weapon / target classes that matter on the coast (added to the shared ones).
+    incident_weapons_extra:
+      naval_drone: "морськ\\w* (?:дрон|безпілот)|безекіпажн\\w* (?:катер|човн|апарат)"
+      kalibr: "калібр"
+    incident_targets_extra:
+      port: "\\bпорт\\w*|причал|портов\\w* інфраструкт|термінал"
+      grain: "зерн|елеватор|зерносхов|агропідприєм|агропромислов"
+      ship: "\\bсудн[оаі]|судна\\b|корабл|танкер|сухогруз|балкер|контейнеровоз|\\bпором"
+      bridge: "\\bміст\\b|\\bмосту\\b|\\bмостом\\b|\\bмости\\b"
+      hotel: "готел"
+      church: "\\bхрам|церкв|собор"
+    # Source names that appear in every article and say nothing about the event.
+    entity_stop_extra: ["пушкі", "суспі", "бесса", "inform", "infor", "одесь", "стежт", "googl", "whats", "новин", "град"]
+
+feed_self_link: "https://ukitfree-wq.github.io/kharkiv-news-feed/odesa/news_feed.xml"
+
+paths:
+  database: data/odesa/state.db
+  output_feed: output/odesa/feed.xml
+  extra_output_feed: null
+
+request:
+  rss_timeout_seconds: 20

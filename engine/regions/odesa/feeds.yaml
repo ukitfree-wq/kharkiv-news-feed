@@ -1,0 +1,80 @@
+# Odesa city + oblast sources. List order does not affect dedup: the earliest
+# publisher of a story always wins. Disable a source with enabled: false.
+
+feeds:
+  - id: pushkinska
+    url: https://pushkinska.net/feed/
+    enabled: true
+    category: Одеса
+    name: Пушкінська
+
+  - id: chis
+    url: https://chis-chernomorsk.com.ua/rss.xml
+    enabled: true
+    category: Одещина
+    name: ЧІС (Чорноморськ)
+
+  - id: bessarabia-bolgrad
+    url: https://bessarabia.ua/ua/area/bolgrad/feed/
+    enabled: true
+    category: Одещина
+    name: Бессарабія UA — Болград
+
+  - id: bessarabia-reni
+    url: https://bessarabia.ua/ua/area/reni/feed/
+    enabled: true
+    category: Одещина
+    name: Бессарабія UA — Рені
+
+  # City council of Білгород-Дністровський (gov site; titles are official notices).
+  - id: bdmr
+    url: https://bdmr.gov.ua/rss.xml
+    enabled: true
+    category: Одещина
+    name: Білгород-Дністровська міська рада
+
+  - id: bessarabiainform
+    url: https://bessarabiainform.com/feed/
+    enabled: true
+    category: Одещина
+    name: Бессарабія INFORM
+
+  # Hotlink-protected images (403 with a foreign Referer): cache images in WP.
+  - id: od-news
+    url: https://od-news.com/feed/
+    enabled: true
+    category: Одеса
+    name: Od-news
+
+  - id: odessa-life
+    url: https://odessa-life.od.ua/uk/feed
+    enabled: true
+    category: Одеса
+    name: Одеське життя
+
+  # Body and in-text photos come from the site's own JSON API (/api3/news/<id>).
+  - id: "048"
+    url: https://www.048.ua/rss
+    enabled: true
+    category: Одеса
+    name: 048.ua
+
+  - id: osvita-omr
+    url: https://osvita-omr.gov.ua/feed/
+    enabled: true
+    category: Одеса
+    name: Департамент освіти Одеської міськради
+
+  - id: grad
+    url: https://grad.ua/rss.xml
+    enabled: true
+    category: Одеса
+    name: Новини Град
+
+  # Added: national Suspilne feed; only the /odesa/ newsroom (plus national
+  # sections) whose titles match title_keywords.txt are kept.
+  - id: suspilne-odesa
+    url: https://suspilne.media/rss/all.rss
+    enabled: true
+    category: Одеса
+    name: Суспільне Одеса

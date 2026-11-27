@@ -168,6 +168,33 @@ VILLAGE_RE = re.compile(
 )
 
 
+# Region lexicon for incident slots and entity stop-words. Defaults are the Kharkiv
+# values above; a region config (dedup.semantic.incident_places, …) replaces or
+# extends them via configure_region(), called by SemanticDeduper.
+_REGION: dict = {}
+
+
+def configure_region(s: dict | None = None) -> None:
+    """Set the place lexicon, city prefix, extra weapon / target classes and
+    entity stop-words from semantic settings. With no region keys this restores
+    the Kharkiv defaults exactly."""
+    s = s or {}
+    weapons = dict(WEAPON_RES)
+    for k, v in (s.get("incident_weapons_extra") or {}).items():
+        weapons[str(k)] = re.compile(str(v), re.IGNORECASE)
+    targets = dict(TARGET_RES)
+    for k, v in (s.get("incident_targets_extra") or {}).items():
+        targets[str(k)] = re.compile(str(v), re.IGNORECASE)
+    _REGION.clear()
+    _REGION.update(
+        places=list(s.get("incident_places") or DEFAULT_PLACES),
+        city_prefixes=tuple(str(x).casefold() for x in (s.get("incident_city_prefixes") or ["харк"])),
+        weapons=weapons,
+        targets=targets,
+        ent_stop=frozenset(ENTITY_STOP) | frozenset(str(x).casefold() for x in (s.get("entity_stop_extra") or [])),
+    )
+
+
 def _sentences(text: str) -> list[str]:
     return [p.strip() for p in re.split(r"(?<=[.!?])\s+|\n+", text or "") if p.strip()]
 
@@ -190,18 +217,20 @@ def incident_lead(title: str, text: str, chars: int = 700) -> str:
 def incident_slots(title: str, text: str, places: list[str] | None = None) -> dict:
     lead = incident_lead(title, text)
     low = lead.casefold().replace("'", "’")
-    weapons = {k for k, rx in WEAPON_RES.items() if rx.search(low)}
+    if not _REGION:
+        configure_region()
+    weapons = {k for k, rx in _REGION["weapons"].items() if rx.search(low)}
     if GENERIC_WEAPON_RE.search(low):
         weapons.add(GENERIC_WEAPON)
-    targets = {k for k, rx in TARGET_RES.items() if rx.search(low)}
+    targets = {k for k, rx in _REGION["targets"].items() if rx.search(low)}
     plc = set()
-    lexicon = places or DEFAULT_PLACES
+    lexicon = places or _REGION["places"]
     for stem_ in lexicon:
         if re.search(r"\b" + re.escape(stem_), low):
             plc.add(stem_)
     for m in VILLAGE_RE.finditer(lead):
         word = (m.group(1) or m.group(2) or "").casefold().replace("'", "’")
-        if not word or word.startswith("харк"):
+        if not word or word.startswith(_REGION["city_prefixes"]):
             continue
         known = next((st for st in lexicon if word.startswith(st)), None)
         plc.add(known or word[:6])
@@ -310,7 +339,9 @@ def extract_entities(title: str, text: str) -> set[str]:
                 continue
         token = m.group(1)
         st = token.casefold() if token.isupper() else stem(token)
-        if st in ENTITY_STOP or token.casefold() in STOPWORDS:
+        if not _REGION:
+            configure_region()
+        if st in _REGION["ent_stop"] or token.casefold() in STOPWORDS:
             continue
         feats.add("@" + st)
     return feats
@@ -536,6 +567,11 @@ def score_pair(a: Doc, b: Doc, idf: Idf, s: dict) -> dict:
         veto = "date_conflict"
     elif hours is not None and hours > float(s["max_hours_apart"]):
         veto = "too_far_apart"
+    elif s.get("digest_title_re") and (
+        re.search(s["digest_title_re"], _norm(a.title), re.I) or re.search(s["digest_title_re"], _norm(b.title), re.I)
+    ):
+        # Daily round-ups ("Одеса сьогодні, 27 листопада: …") overlap many single stories.
+        veto = "digest"
     lo = float(s["emb_min"])
     emb_n = max(0.0, min(1.0, (emb - lo) / (1.0 - lo)))
     score = float(s["w_emb"]) * emb_n + float(s["w_kw"]) * kw + float(s["w_ent"]) * ent
@@ -569,6 +605,8 @@ def score_pair(a: Doc, b: Doc, idf: Idf, s: dict) -> dict:
             ok, why = incident_match(a.slots, b.slots, s)
             if ok:
                 rule = "incident:" + why
+        if not rule:
+            rule = topic_match(a, b, hours, s)
     return {
         "emb": round(emb, 4),
         "kw": round(kw, 4),
@@ -583,11 +621,34 @@ def score_pair(a: Doc, b: Doc, idf: Idf, s: dict) -> dict:
     }
 
 
+def topic_match(a: Doc, b: Doc, hours: float | None, s: dict) -> str:
+    """Region option topic_rules: recurring service items (e.g. the daily weather
+    forecast) from different sites for the same day are one story. Each rule:
+    {name, title_re, max_hours}; both headlines must match title_re, and either
+    name the same calendar date or (if one has no date) be <= max_hours apart."""
+    for rule in s.get("topic_rules") or []:
+        rx = rule.get("title_re")
+        if not rx:
+            continue
+        ta, tb = _norm(a.title), _norm(b.title)
+        if not (re.search(rx, ta, re.I) and re.search(rx, tb, re.I)):
+            continue
+        da, db = extract_dates(ta), extract_dates(tb)
+        if da and db:
+            if da & db:
+                return f"topic:{rule.get('name', 'topic')}"
+            continue
+        if hours is not None and hours <= float(rule.get("max_hours") or 12):
+            return f"topic:{rule.get('name', 'topic')}"
+    return ""
+
+
 class SemanticDeduper:
     """Holds earlier stories (with embeddings) and checks new items against them."""
 
     def __init__(self, cfg: dict | None, root=None):
         self.s = settings(cfg)
+        configure_region(self.s)
         self.embedder = Embedder(self.s, root)
         self.docs: list[Doc] = []
         self.idf: Idf | None = None

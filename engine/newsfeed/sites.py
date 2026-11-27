@@ -239,6 +239,124 @@ SITE_PROFILES: dict[str, dict] = {
         # numeric ids) still pass if the title keyword filter matches.
         "drop_first_path_segments": SUSPILNE_OTHER_REGIONS,
     },
+
+    # ---- Odesa region (engine/regions/odesa) ----
+    "pushkinska.net": {
+        "strip_comments": True,
+        "name": "Пушкінська",
+        "selectors": ["article div.entry-content", "div.bnq-single-con div.entry-content"],
+        "lead_image_selectors": ["article div.pfy-single-post-thumb img"],
+        "remove": ["div.bnq-inner-social", ".sharedaddy", ".share", "nav", "header", "footer", "script"],
+    },
+    "chis-chernomorsk.com.ua": {
+        "strip_comments": True,
+        "name": "ЧІС",
+        "selectors": ["article.page__article"],
+        "lead_image_selectors": ["article.page__article div.page__poster img"],
+        # <time datetime> is often a day off; the RSS pubDate is right.
+        "ignore_page_date": True,
+        "remove": [
+            "header.page__header",
+            "a.page__subscribe",
+            "div.bannerAdvertising",
+            "div.page__prev-next",
+            "div.page__tags",
+            "div.page__footer",
+            "footer",
+            "div.sect",
+            "div.page__comments",
+            "form",
+            "script",
+        ],
+        "drop_text_re": r"^(підписуйся|підписуйтесь|слідкуйте)\b.{0,120}(facebook|telegram|instagram)",
+    },
+    "bessarabia.ua": {
+        "strip_comments": True,
+        "name": "Бессарабія UA",
+        "selectors": ["div.content div.postContent", "div.postContent"],
+        "lead_image_selectors": [],
+        "remove": ["#fb-root", "noscript", ".share", "script", "ins", "div.subscribeTelegramWrap"],
+    },
+    "bdmr.gov.ua": {
+        "strip_comments": True,
+        "name": "Білгород-Дністровська міська рада",
+        "selectors": ["section.section-one-news div.news-block", "div.news-block"],
+        # The page <h1> is the site name; the headline is the <h4>.
+        "title_selector": "div.news-block > h4",
+        "lead_image_selectors": [],
+        "remove": [":scope > div.breadcrumb", ":scope > p.date", ":scope > h4", "script"],
+    },
+    "bessarabiainform.com": {
+        "strip_comments": True,
+        "name": "Бессарабія INFORM",
+        "selectors": ["article.post-item div.post-item__content.typography-default"],
+        "lead_image_selectors": ["article.post-item div.post-item__thumbnail img"],
+        "remove": [
+            "a.bi-follow-banner",
+            "div.bi-follow-banner",
+            "div.g",
+            "p.bi-previous-news",
+            "aside",
+            "ul.share-list",
+            "div.post-tags",
+            "script",
+            "ins",
+        ],
+        "drop_text_re": r"^(будьте в курсі головних подій|найважливіші події бессарабії|додайте «бессарабія inform»)",
+        "truncate_at_re": r"^(раніше ми повідомляли|читайте також)\s*:",
+    },
+    "od-news.com": {
+        "strip_comments": True,
+        "name": "Od-news",
+        "selectors": ["article div.entry-content"],
+        "lead_image_selectors": [],
+        "remove": ["#telegram_subscribe", "div.yarpp", ".sharedaddy", ".share", "script", "ins"],
+        "truncate_at_re": r"^(другие интересные новости|інші цікаві новини)\s*:",
+    },
+    "odessa-life.od.ua": {
+        "strip_comments": True,
+        "name": "Одеське життя",
+        "selectors": ["article div.entry-content"],
+        "lead_image_selectors": [],
+        "remove": [
+            "div.ai-viewports",
+            "div.code-block",
+            "blockquote.box_color",
+            "section.below-content",
+            "div.social-share-buttons",
+            "script",
+            "ins",
+        ],
+        "drop_text_re": r"^(ви також можете дізнатися|за темою|читайте також)\s*:",
+    },
+    "www.048.ua": {
+        "strip_comments": True,
+        "name": "048.ua",
+        "api": "cis",
+        "allow_image_re": r"^https://s\.048\.ua/",
+        "selectors": ["div.article-details__text app-model-content", "div.article-details__text"],
+        "lead_image_selectors": [],
+        "skip_image_re": r"/dist-assets/images/",
+        "truncate_at_re": r"^читайте також\s*:?\s*$",
+        "drop_text_re": r"^(нагадуємо|читайте також|раніше ми писали)\s*:",
+        "remove": ["script"],
+    },
+    "osvita-omr.gov.ua": {
+        "strip_comments": True,
+        "name": "Департамент освіти Одеської міськради",
+        "selectors": ["article.post-full div.entry-content"],
+        "title_selector": "article.post-full h2.entry-title",
+        "lead_image_selectors": ["article.post-full div.post-image img"],
+        "remove": ["div.post-share", "script"],
+    },
+    "grad.ua": {
+        "strip_comments": True,
+        "name": "Новини Град",
+        "selectors": ["div#flstr div.dpad div.maincont", "div#flstr div.dpad", "div.fullstory"],
+        "lead_image_selectors": [],
+        "link_image_selector": "a.highslide, a[href*='/uploads/posts/']",
+        "remove": ["style", "script", "ins", "div.g_news", "div.grad_tags", "div.googleBnr", "div.related_blok"],
+    },
 }
 
 
@@ -268,6 +386,23 @@ GENERIC_SELECTORS = [
     "article",
     "main",
 ]
+
+
+def apply_overrides(overrides: dict | None) -> None:
+    """Region config `site_overrides`: per-host changes to SITE_PROFILES.
+
+    Used for shared sources such as Suspilne, whose regional newsroom filter and
+    publisher name differ per region feed. Lists become frozensets for
+    drop_first_path_segments; other keys replace the profile value.
+    """
+    for host, changes in (overrides or {}).items():
+        prof = dict(SITE_PROFILES.get(host) or {"name": host, "selectors": GENERIC_SELECTORS,
+                                                  "lead_image_selectors": [], "remove": DEFAULT_REMOVE})
+        for key, val in (changes or {}).items():
+            if key == "drop_first_path_segments":
+                val = frozenset(str(v).lower() for v in (val or []))
+            prof[key] = val
+        SITE_PROFILES[host] = prof
 
 
 def profile_for(url: str) -> dict:

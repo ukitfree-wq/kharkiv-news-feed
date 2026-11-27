@@ -428,6 +428,112 @@ def _strip_boilerplate(root: Tag) -> None:
             tag.decompose()
 
 
+_TEXT_BLOCKS = ["p", "div", "h2", "h3", "h4", "h5", "h6", "blockquote", "section", "aside", "ul", "strong", "b", "a", "span", "figure"]
+
+
+def _drop_text_blocks(root: Tag, pattern: str | None) -> None:
+    """Profile option drop_text_re: remove the outermost blocks whose text matches."""
+    if not pattern:
+        return
+    rx = re.compile(pattern, re.I)
+    for tag in list(root.find_all(_TEXT_BLOCKS)):
+        if tag.parent is None:
+            continue
+        text = tag.get_text(" ", strip=True)
+        if text and rx.match(text):
+            tag.decompose()
+
+
+def _truncate_at(root: Tag, pattern: str | None) -> None:
+    """Profile option truncate_at_re: drop the first block whose text matches and
+    everything after it inside the article body ("Читайте також" lists, tags, …)."""
+    if not pattern:
+        return
+    rx = re.compile(pattern, re.I)
+    marker = None
+    for tag in root.find_all(_TEXT_BLOCKS):
+        text = tag.get_text(" ", strip=True)
+        if text and rx.match(text):
+            marker = tag
+            break
+    if marker is None:
+        return
+    node = marker
+    while node is not None and node is not root:
+        for sib in list(node.next_siblings):
+            if isinstance(sib, Tag):
+                sib.decompose()
+            else:
+                sib.extract()
+        node = node.parent
+    marker.decompose()
+
+
+def _profile_image_ok(url: str, profile: dict) -> bool:
+    pattern = profile.get("skip_image_re")
+    return not (pattern and re.search(pattern, url or "", re.I))
+
+
+def _good_for(url: str, profile: dict) -> bool:
+    """_good_image, except that a profile's allow_image_re can whitelist a CDN path
+    the generic junk filter would reject (048.ua posters live under /newsIcon/)."""
+    allow = profile.get("allow_image_re")
+    if allow and url and re.search(allow, url, re.I) and urlparse(url).scheme in ("http", "https"):
+        return _profile_image_ok(url, profile)
+    return _good_image(url) and _profile_image_ok(url, profile)
+
+
+def _cis_api_body(url: str, session: requests.Session, timeout: float, profile: dict) -> tuple[str, str]:
+    """Article HTML + poster URL from the CIS city-site API (048.ua, 057.ua, …).
+
+    Their pages are Angular SSR: in-text photos are placeholders (cap.jpg) filled
+    in by JS from /api3/news/<id>?expand=parsedContent. Returns ("", "") on failure.
+    """
+    m = re.search(r"/news/(\d+)", urlparse(url).path)
+    if not m:
+        return "", ""
+    host = urlparse(url).scheme + "://" + urlparse(url).netloc
+    try:
+        resp = session.get(
+            f"{host}/api3/news/{m.group(1)}",
+            params={"expand": "parsedContent,internalPoster"},
+            timeout=timeout,
+            headers={"Accept": "application/json"},
+        )
+        if resp.status_code != 200:
+            return "", ""
+        data = resp.json()
+    except Exception as exc:  # noqa: BLE001
+        log.warning("cis api failed %s: %s", url, exc)
+        return "", ""
+
+    def image_html(block: dict) -> str:
+        src = str(block.get("sourceUrl") or "").strip()
+        if not src:
+            return ""
+        caption = " ".join(
+            str(x).strip() for x in (block.get("description"), block.get("author")) if x and str(x).strip()
+        )
+        out = f'<figure><img src="{escape(src, quote=True)}" alt="{escape(str(block.get("description") or ""), quote=True)}"/>'
+        if caption:
+            out += f"<figcaption>{escape(caption)}</figcaption>"
+        return out + "</figure>"
+
+    parts: list[str] = []
+    for block in data.get("parsedContent") or []:
+        kind = block.get("type") or ""
+        if kind == "imageBlock":
+            parts.append(image_html(block))
+        elif kind == "galleryBlock":
+            parts.extend(image_html(b) for b in block.get("images") or [])
+        elif kind == "quoteBlock":
+            parts.append(f"<blockquote>{block.get('content') or ''}</blockquote>")
+        elif block.get("content"):
+            parts.append(str(block["content"]))
+    poster = ((data.get("internalPoster") or {}).get("url") or "").strip()
+    return "\n".join(p for p in parts if p), poster
+
+
 def _lead_images(soup: BeautifulSoup, profile: dict, page_url: str) -> list[str]:
     urls: list[str] = []
     for sel in profile.get("lead_image_selectors") or []:
@@ -635,7 +741,9 @@ def extract_article(
         soup.title.string.strip() if soup.title and soup.title.string else ""
     )
     # Prefer the on-page headline if present
-    h1 = soup.find("h1")
+    h1 = soup.select_one(profile["title_selector"]) if profile.get("title_selector") else None
+    if h1 is None:
+        h1 = soup.find("h1")
     if h1 and h1.get_text(strip=True):
         result["title"] = h1.get_text(" ", strip=True)
     elif page_title:
@@ -643,34 +751,68 @@ def extract_article(
     site = _meta(soup, "og:site_name") or profile.get("name") or result["publisher"]
     if site:
         result["publisher"] = site
-    page_published = extract_page_published(soup)
+    # Some sites print a wrong machine-readable date (chis-chernomorsk.com.ua);
+    # for those the RSS pubDate is the publish time.
+    page_published = None if profile.get("ignore_page_date") else extract_page_published(soup)
     result["page_published_at"] = page_published
     if page_published:
         # Page time is authoritative when present; RSS time stays on the item as feed_published_at.
         result["published_at"] = page_published
 
-    body = _pick_body(soup, profile)
+    body = None
+    api_poster = ""
+    if profile.get("api") == "cis":
+        api_html, api_poster = _cis_api_body(final_url, session, timeout, profile)
+        if api_html:
+            body = BeautifulSoup(f"<div>{api_html}</div>", "lxml").div
+    if body is None:
+        body = _pick_body(soup, profile)
     if body is None:
         body = soup.find("article") or soup.find("main") or soup.body
 
     if body is not None:
+        if profile.get("strip_comments"):
+            from bs4 import Comment
+
+            for c in list(body.find_all(string=lambda t: isinstance(t, Comment))):
+                c.extract()
         _strip_junk(body, profile.get("remove") or [])
+        if profile.get("link_image_selector"):
+            # Thumbnails that link to the full-size photo (grad.ua highslide): use the link.
+            for a in body.select(profile["link_image_selector"]):
+                href = _abs(_attr_str(a.get("href")), final_url)
+                img = a.find("img")
+                if img is not None and re.search(r"\.(?:jpe?g|png|webp|gif)(?:[?#].*)?$", href, re.I):
+                    img.attrs = {"src": href, "alt": img.get("alt") or ""}
+        _truncate_at(body, profile.get("truncate_at_re"))
+        _drop_text_blocks(body, profile.get("drop_text_re"))
         _strip_boilerplate(body)
         _rewrite_images(body, final_url)
+        if profile.get("skip_image_re"):
+            for img in list(body.find_all("img")):
+                if not _profile_image_ok(img.get("src") or "", profile):
+                    img.decompose()
 
     lead_from_profile = _lead_images(soup, profile, final_url)
+    if api_poster and api_poster not in lead_from_profile:
+        lead_from_profile.insert(0, api_poster)
+    if profile.get("skip_image_re"):
+        lead_from_profile = [u for u in lead_from_profile if _profile_image_ok(u, profile)]
     og_image = _meta(soup, "og:image", "og:image:url", "twitter:image", "twitter:image:src")
     og_image = _abs(og_image, final_url) if og_image else ""
+    if og_image and not _profile_image_ok(og_image, profile):
+        og_image = ""
 
     images: list[str] = []
     for src in lead_from_profile:
-        if _good_image(src) and src not in images:
+        if (_good_for(src, profile) if profile.get("allow_image_re") else _good_image(src)) and src not in images:
             images.append(src)
     if body is not None:
         for src in _collect_images(body, final_url):
             if src not in images:
                 images.append(src)
-    if _good_image(og_image) and og_image not in images:
+    og_ok = _good_for(og_image, profile) if profile.get("allow_image_re") else _good_image(og_image)
+    if og_ok and og_image not in images:
         # og:image often a crop of the lead; put it first only if we have no lead yet
         if not lead_from_profile:
             images.insert(0, og_image)
@@ -681,7 +823,7 @@ def extract_article(
     # Also look in the selected body only (not footer share icons)
     result["embeds"] = embeds
     result["images"] = images
-    result["lead_image"] = images[0] if images else (og_image if _good_image(og_image) else "")
+    result["lead_image"] = images[0] if images else (og_image if og_ok else "")
 
     content_html = serialize_body(body, final_url) if body is not None else ""
     content_text = _text_of(content_html)

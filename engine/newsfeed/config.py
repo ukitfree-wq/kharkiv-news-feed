@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
@@ -116,8 +117,21 @@ def load_feeds_file(path: Path) -> list[dict[str, Any]]:
     return feeds
 
 
+def config_path_from_env() -> Path | None:
+    """NEWSFEED_CONFIG=regions/odesa/config.yaml selects a region config (relative to engine/)."""
+    raw = os.environ.get("NEWSFEED_CONFIG", "").strip()
+    if not raw:
+        return None
+    p = Path(raw)
+    p = p if p.is_absolute() else ROOT / p
+    if not p.is_file():
+        # Never fall back to the defaults (= the Kharkiv feed) for a region run.
+        raise FileNotFoundError(f"NEWSFEED_CONFIG points to a missing file: {p}")
+    return p
+
+
 def load_config(path: Path | None = None) -> dict[str, Any]:
-    cfg_path = path or (ROOT / "config.yaml")
+    cfg_path = path or config_path_from_env() or (ROOT / "config.yaml")
     raw: dict[str, Any] = {}
     if cfg_path.is_file():
         with cfg_path.open("r", encoding="utf-8") as fh:
@@ -175,5 +189,9 @@ def load_config(path: Path | None = None) -> dict[str, Any]:
     if not kw_path.is_absolute():
         kw_path = ROOT / kw_path
     cfg["title_keywords_file"] = str(kw_path)
+    guards = cfg.get("title_keyword_guards_file")
+    if guards:
+        gp = Path(guards)
+        cfg["title_keyword_guards_file"] = str(gp if gp.is_absolute() else ROOT / gp)
     cfg["future_grace_minutes"] = int(cfg.get("future_grace_minutes") or 5)
     return cfg

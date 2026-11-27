@@ -53,8 +53,55 @@ def _word_pattern(keyword: str) -> re.Pattern[str]:
     )
 
 
-def compile_keywords(keywords: list[str]) -> list[tuple[str, re.Pattern[str]]]:
-    return [(kw, _word_pattern(kw)) for kw in keywords]
+class CompiledKeywords(list):
+    """List of (keyword, pattern) plus optional exclusion guards.
+
+    A guard is a regex for a phrase in which a keyword does NOT mean the region
+    (e.g. "Південна Корея", "Подільський район Києва"). Guarded spans are blanked
+    out of the title before keyword matching, so the same title still matches
+    on any other, unguarded keyword.
+    """
+
+    guards: list[tuple[str, re.Pattern[str]]]
+
+    def __init__(self, items=(), guards=None):
+        super().__init__(items)
+        self.guards = list(guards or [])
+
+
+def load_title_guards(path: str | Path | None) -> list[str]:
+    """One regex per line (matched against the casefolded, apostrophe-normalized title)."""
+    if not path or not Path(path).is_file():
+        return []
+    out: list[str] = []
+    for line in Path(path).read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#"):
+            out.append(line)
+    return out
+
+
+def compile_guard(expr: str) -> re.Pattern[str]:
+    # Same normalization as titles; \b is unreliable next to apostrophes, so callers
+    # write explicit letter boundaries where needed.
+    return re.compile(normalize_match_text(expr), flags=re.UNICODE)
+
+
+def compile_keywords(keywords: list[str], guards: list[str] | None = None) -> list[tuple[str, re.Pattern[str]]]:
+    items = [(kw, _word_pattern(kw)) for kw in keywords]
+    if not guards:
+        return items
+    return CompiledKeywords(items, [(g, compile_guard(g)) for g in guards])
+
+
+def apply_guards(norm: str, compiled) -> tuple[str, list[str]]:
+    """Blank out guarded spans of a normalized title. Returns (text, guards that fired)."""
+    fired: list[str] = []
+    for expr, rx in getattr(compiled, "guards", None) or []:
+        if rx.search(norm):
+            fired.append(expr)
+            norm = rx.sub(lambda m: " " * len(m.group(0)), norm)
+    return norm, fired
 
 
 def title_match(title: str, compiled: list[tuple[str, re.Pattern[str]]]) -> str | None:
@@ -62,10 +109,25 @@ def title_match(title: str, compiled: list[tuple[str, re.Pattern[str]]]) -> str 
     if not title or not compiled:
         return None
     norm = normalize_match_text(title)
+    if getattr(compiled, "guards", None):
+        norm, _ = apply_guards(norm, compiled)
     for keyword, pattern in compiled:
         if pattern.search(norm):
             return keyword
     return None
+
+
+def guarded_out(title: str, compiled) -> list[str]:
+    """Guards that turned a would-be match into a non-match (for logging)."""
+    if not title or not getattr(compiled, "guards", None):
+        return []
+    norm = normalize_match_text(title)
+    if not any(p.search(norm) for _, p in compiled):
+        return []
+    masked, fired = apply_guards(norm, compiled)
+    if any(p.search(masked) for _, p in compiled):
+        return []
+    return fired
 
 
 def title_words(title: str) -> list[str]:

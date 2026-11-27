@@ -36,9 +36,16 @@ from newsfeed.dedup import (
 )
 from newsfeed.extract import extract_many
 from newsfeed.feed_write import render_feed, write_feed
-from newsfeed.keywords import compile_keywords, load_title_keywords, near_misses, title_match
+from newsfeed.keywords import (
+    compile_keywords,
+    guarded_out,
+    load_title_guards,
+    load_title_keywords,
+    near_misses,
+    title_match,
+)
 from newsfeed.rss_fetch import fetch_feeds
-from newsfeed.sites import item_url_allowed, profile_for
+from newsfeed.sites import apply_overrides, item_url_allowed, profile_for
 from newsfeed.semantic_dedup import extract_dates
 from newsfeed.store import (
     connect,
@@ -204,7 +211,17 @@ def main(argv: list[str] | None = None) -> int:
     setup_logging()
     started = now_iso()
     t0 = time.monotonic()
-    cfg = load_config()
+    args = list(sys.argv[1:] if argv is None else argv)
+    cfg_path = None
+    if "--config" in args:
+        i = args.index("--config")
+        if i + 1 < len(args):
+            from pathlib import Path as _Path
+
+            cfg_path = _Path(args[i + 1])
+            if not cfg_path.is_absolute():
+                cfg_path = ROOT / cfg_path
+    cfg = load_config(cfg_path)
     region = cfg["region"]
     extract_cfg = cfg["extraction"]
     decode_cfg = cfg["decode"]
@@ -220,8 +237,10 @@ def main(argv: list[str] | None = None) -> int:
     now = datetime.now(timezone.utc)
     paths = cfg["paths"]
     feeds = cfg.get("feeds_enabled") or []
+    apply_overrides(cfg.get("site_overrides"))
     keywords = load_title_keywords(cfg["title_keywords_file"])
-    keyword_index = compile_keywords(keywords)
+    guards = load_title_guards(cfg.get("title_keyword_guards_file"))
+    keyword_index = compile_keywords(keywords, guards)
     if not keywords:
         log.error("title keyword file is empty: %s", cfg["title_keywords_file"])
         return 1
@@ -370,8 +389,15 @@ def main(argv: list[str] | None = None) -> int:
         it["skip_reason"] = "filtered_keyword"
         if not it.get("canonical_url"):
             it["canonical_url"] = url
+        fired = guarded_out(title, keyword_index)
+        if fired:
+            it["skip_reason"] = "filtered_keyword:guard"
+            stats.setdefault("keyword_guarded", []).append({"title": title, "guards": fired})
         insert_article(conn, _persist_fields(it, started))
-        log.info("filter (no title keyword): %s", title[:100])
+        if fired:
+            log.info("filter (keyword only inside a guarded phrase %s): %s", fired, title[:100])
+        else:
+            log.info("filter (no title keyword): %s", title[:100])
     new_items = still_new
     conn.commit()
     log.info(

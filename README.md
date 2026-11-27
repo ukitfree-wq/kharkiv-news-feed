@@ -4,6 +4,7 @@ Merged RSS 2.0 feed of Kharkiv-region news from local outlets.
 
 - Live feed (GitHub Pages): https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml
 - Raw file: https://raw.githubusercontent.com/ukitfree-wq/kharkiv-news-feed/main/news_feed.xml
+- Odesa city and oblast feed (same engine and rules): https://ukitfree-wq.github.io/kharkiv-news-feed/odesa/news_feed.xml
 
 ## How it is updated
 
@@ -19,3 +20,20 @@ It is triggered every 5 minutes by an external cron (cron-job.org calling the
 - Feed commits on `main` are squashed once a day to keep the repository small.
 
 `Probe sources` (manual workflow) checks that every source can be fetched and scraped.
+
+## Regions
+
+The workflow runs one job per region in parallel; a failing region does not stop the other.
+
+| Region | Config | State branch | Published file |
+|---|---|---|---|
+| Kharkiv | `engine/config.yaml`, `engine/feeds.yaml`, `engine/title_keywords.txt` | `state` | `news_feed.xml` |
+| Odesa | `engine/regions/odesa/` (`config.yaml`, `feeds.yaml`, `title_keywords.txt`, `title_guards.txt`) | `state-odesa` | `odesa/news_feed.xml` |
+
+A region config is selected with `NEWSFEED_CONFIG=regions/<name>/config.yaml` (relative to `engine/`).
+Region-only options: `title_keyword_guards_file` (regexes for headline phrases that must not count
+as a keyword hit, e.g. "Подільський район Києва"), `site_overrides` (per-site profile changes),
+and in `dedup.semantic`: `incident_places`, `incident_city_prefixes`, `incident_weapons_extra`,
+`incident_targets_extra`, `entity_stop_extra`, `digest_title_re`, `topic_rules`.
+`engine/ci/publish.sh` takes `STATE_BRANCH`, `STATE_DB`, `FEED_SRC`, `FEED_DEST`, `FEED_LABEL`
+and `SQUASH` (only the Kharkiv job squashes the daily history).

@@ -10,7 +10,24 @@
 # Before every retry main is re-fetched and the publish commit is rebuilt on top
 # of whatever main is now, so a retry never overwrites anybody else's commit.
 # Exits non-zero only if every attempt fails. The state push always comes first.
+#
+# Region settings (environment; the defaults are the Kharkiv feed):
+#   STATE_BRANCH  branch that holds state.db           (state)
+#   STATE_DB      local state database                 (engine/data/state.db)
+#   FEED_SRC      feed written by the engine           (engine/output/feed.xml)
+#   FEED_DEST     path of the published feed on main   (news_feed.xml)
+#   FEED_LABEL    commit message prefix                (Update feed)
+#   SQUASH        1 = this job does the daily squash   (1); exactly one job may.
+# Several region jobs run in parallel and all push to main, so every publish
+# commit is (re)built on a freshly fetched main and the squash uses a lease.
 set -euo pipefail
+
+STATE_BRANCH="${STATE_BRANCH:-state}"
+DB="${STATE_DB:-engine/data/state.db}"
+FEED_SRC="${FEED_SRC:-engine/output/feed.xml}"
+FEED_DEST="${FEED_DEST:-news_feed.xml}"
+FEED_LABEL="${FEED_LABEL:-Update feed}"
+SQUASH="${SQUASH:-1}"
 
 KIEV_TZ="Europe/Kyiv"
 kiev_now() { TZ="$KIEV_TZ" date '+%Y-%m-%d %H:%M:%S'; }
@@ -43,45 +60,46 @@ fetch_main() {
 ensure_full_history
 
 # ---- 1. state branch (must succeed before the feed is published) ----
-DB="engine/data/state.db"
 [[ -s "$DB" ]] || { echo "ERROR: $DB missing or empty"; exit 1; }
 new_blob=$(git hash-object -w "$DB")
-old_blob=$(git rev-parse -q --verify "origin/state:state.db" 2>/dev/null || true)
+old_blob=$(git rev-parse -q --verify "origin/$STATE_BRANCH:state.db" 2>/dev/null || true)
 if [[ "$new_blob" != "$old_blob" ]]; then
   tree=$(printf '100644 blob %s\tstate.db\n' "$new_blob" | git mktree)
   state_commit=$(git commit-tree "$tree" -m "state.db $(kiev_now) Europe/Kiev")
-  # Only this job writes the state branch (concurrency group), so a force push
+  # Only this job writes its state branch (concurrency group), so a force push
   # of the same commit is safe to repeat.
   ok=0
   for ((i = 1; i <= ATTEMPTS; i++)); do
-    if git push --force origin "$state_commit:refs/heads/state"; then ok=1; break; fi
+    if git push --force origin "$state_commit:refs/heads/$STATE_BRANCH"; then ok=1; break; fi
     # The ref may have been updated even though the client saw an error.
-    if [[ "$(git ls-remote origin refs/heads/state | cut -f1)" == "$state_commit" ]]; then ok=1; break; fi
+    if [[ "$(git ls-remote origin "refs/heads/$STATE_BRANCH" | cut -f1)" == "$state_commit" ]]; then ok=1; break; fi
     if (( i < ATTEMPTS )); then backoff "$i"; fi
   done
   [[ "$ok" -eq 1 ]] || { echo "ERROR: state push failed after $ATTEMPTS attempts; feed not published"; exit 1; }
-  echo "state branch updated ($(stat -c %s "$DB") bytes)"
+  echo "$STATE_BRANCH branch updated ($(stat -c %s "$DB") bytes)"
 else
   echo "state.db unchanged"
 fi
 
 # ---- 2. feed on main ----
-FEED_SRC="engine/output/feed.xml"
-cp -f "$FEED_SRC" news_feed.xml
-items=$(grep -o '<item[ >]' news_feed.xml | wc -l)
+mkdir -p "$(dirname "$FEED_DEST")"
+cp -f "$FEED_SRC" "$FEED_DEST"
+items=$(grep -o '<item[ >]' "$FEED_DEST" | wc -l)
 when="$(kiev_now) Europe/Kiev"
 
 # Commits after the last one that touched the workflow files are feed updates
-# made by this job; they are what the daily squash folds together.
+# made by the region jobs; they are what the daily squash folds together.
 base=$(git log -1 --format=%H -- .github/workflows)
 today=$(kiev_date)
 first_after_base=$(TZ="$KIEV_TZ" git log --reverse --format=%cd --date=format-local:%F "$base..HEAD" | sed -n 1p)
 count_after_base=$(git rev-list --count "$base..HEAD")
 
 changed=1
-git diff --quiet -- news_feed.xml && changed=0
+git diff --quiet -- "$FEED_DEST" && changed=0
+# A new region's feed file is untracked until its first publish.
+[[ "$changed" -eq 0 && -z "$(git ls-files -- "$FEED_DEST")" ]] && changed=1
 need_squash=0
-if [[ "$count_after_base" -gt 1 && -n "$first_after_base" && "$first_after_base" != "$today" ]]; then
+if [[ "$SQUASH" == "1" && "$count_after_base" -gt 1 && -n "$first_after_base" && "$first_after_base" != "$today" ]]; then
   need_squash=1
 fi
 
@@ -90,37 +108,47 @@ if [[ "$changed" -eq 0 && "$need_squash" -eq 0 ]]; then
   exit 0
 fi
 
-rebuild_first=0
 if [[ "$need_squash" -eq 1 ]]; then
-  rebuild_first=1   # if the squash falls back, rebuild on a freshly fetched main
-  expected=$(git rev-parse HEAD)
-  git add news_feed.xml
-  tree=$(git write-tree)
+  # The squash is built on a freshly fetched main every attempt (another region
+  # job may have pushed meanwhile): main's tree with our feed file replaced,
+  # parented on the last workflow commit, pushed with a lease on that main.
+  new_feed_blob=$(git hash-object -w "$FEED_DEST")
   msg="Squash feed history: ${items} items, ${when}"
-  commit=$(git commit-tree "$tree" -p "$base" -m "$msg")
+  tmp_index=$(mktemp)
+  trap 'rm -f "$tmp_index"' EXIT
   for ((i = 1; i <= ATTEMPTS; i++)); do
+    if ! fetch_main; then
+      if (( i < ATTEMPTS )); then backoff "$i"; fi
+      continue
+    fi
+    expected=$(git rev-parse refs/remotes/origin/main)
+    sq_base=$(git log -1 --format=%H "$expected" -- .github/workflows)
+    if [[ "$(git rev-list --count "$sq_base..$expected")" -le 1 ]]; then
+      echo "main has nothing left to squash; publishing as a normal commit"
+      break
+    fi
+    GIT_INDEX_FILE="$tmp_index" git read-tree "$expected"
+    GIT_INDEX_FILE="$tmp_index" git update-index --add --cacheinfo "100644,$new_feed_blob,$FEED_DEST"
+    tree=$(GIT_INDEX_FILE="$tmp_index" git write-tree)
+    commit=$(git commit-tree "$tree" -p "$sq_base" -m "$msg")
+    folded=$(git rev-list --count "$sq_base..$expected")
     # --force-with-lease: only replaces main if it is still the commit we squashed.
     if git push --force-with-lease="main:$expected" origin "$commit:refs/heads/main"; then
-      echo "published (daily squash onto ${base:0:7}, ${count_after_base} commits folded): $msg"
+      echo "published (daily squash onto ${sq_base:0:7}, ${folded} commits folded): $msg"
       exit 0
     fi
     fetch_main || true
-    now_main=$(git rev-parse -q --verify refs/remotes/origin/main || true)
-    if [[ "$now_main" == "$commit" ]]; then
+    if [[ "$(git rev-parse -q --verify refs/remotes/origin/main || true)" == "$commit" ]]; then
       echo "published (daily squash; push reported an error but main is updated): $msg"
       exit 0
     fi
-    if [[ "$now_main" != "$expected" ]]; then
-      echo "main moved during squash (${expected:0:7} -> ${now_main:0:7}); publishing as a normal commit instead"
-      break
-    fi
     if (( i < ATTEMPTS )); then backoff "$i"; fi
   done
-  echo "WARNING: daily squash push failed; publishing as a normal commit instead"
+  echo "WARNING: daily squash not pushed; publishing as a normal commit instead"
 fi
 
 # Normal publish: one commit with the new news_feed.xml on top of current main.
-msg="Update feed: ${items} items, ${when}"
+msg="${FEED_LABEL}: ${items} items, ${when}"
 # Rebuilds the publish commit on top of the freshly fetched main (never force).
 # Returns 0 = commit ready to push, 2 = main already has our commit or the same
 # feed (nothing left to do), 1 = fetch failed.
@@ -131,20 +159,16 @@ rebuild_on_main() {
     return 2
   fi
   git reset -q --hard "$remote"
-  cp -f "$FEED_SRC" news_feed.xml
-  git add news_feed.xml
-  git diff --cached --quiet -- news_feed.xml && return 2
+  mkdir -p "$(dirname "$FEED_DEST")"
+  cp -f "$FEED_SRC" "$FEED_DEST"
+  git add "$FEED_DEST"
+  git diff --cached --quiet -- "$FEED_DEST" && return 2
   git commit -q -m "$msg"
   return 0
 }
 
-if [[ "$rebuild_first" -eq 1 ]]; then
-  ready=0
-else
-  git add news_feed.xml
-  git commit -q -m "$msg"
-  ready=1
-fi
+# Always build on a freshly fetched main: the other region job may have pushed.
+ready=0
 for ((i = 1; i <= ATTEMPTS; i++)); do
   if [[ "$ready" -eq 0 ]]; then
     rc=0; rebuild_on_main || rc=$?
@@ -161,5 +185,5 @@ for ((i = 1; i <= ATTEMPTS; i++)); do
   ready=0
   if (( i < ATTEMPTS )); then backoff "$i"; fi
 done
-echo "ERROR: publishing news_feed.xml to main failed after $ATTEMPTS attempts"
+echo "ERROR: publishing $FEED_DEST to main failed after $ATTEMPTS attempts"
 exit 1

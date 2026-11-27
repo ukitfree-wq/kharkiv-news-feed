@@ -2,7 +2,9 @@
 
 Read-only: never touches state.db or the published feed. Used to verify that
 all sources work from a GitHub runner (non-Ukrainian IPs).
-Usage: python -m ci.probe [articles_per_feed]   (run from engine/)
+Usage: python -m ci.probe [articles_per_feed] [extra_feed_url ...]   (run from engine/)
+NEWSFEED_CONFIG selects the region config (default config.yaml). Extra feed
+URLs are candidate sources: probed the same way, but not counted as failures.
 """
 from __future__ import annotations
 
@@ -14,11 +16,14 @@ import requests
 
 from newsfeed.config import load_config
 from newsfeed.extract import _session, extract_article
+from newsfeed.sites import apply_overrides
 
 
 def main() -> int:
     per_feed = int(sys.argv[1]) if len(sys.argv) > 1 else 2
+    extra = sys.argv[2:]
     cfg = load_config()
+    apply_overrides(cfg.get("site_overrides"))
     ex = cfg["extraction"]
     rss = requests.Session()
     rss.headers.update({
@@ -28,7 +33,10 @@ def main() -> int:
     })
     page = _session(ex["user_agent"], ex["accept_language"])
     failures = 0
-    for feed in [f for f in cfg["feeds"] if f["enabled"]]:
+    feeds = [f for f in cfg["feeds"] if f["enabled"]]
+    feeds += [{"id": f"candidate:{u}", "url": u, "candidate": True} for u in extra]
+    for feed in feeds:
+        cand = feed.get("candidate", False)
         t = time.monotonic()
         try:
             r = rss.get(feed["url"], timeout=cfg["request"]["rss_timeout_seconds"])
@@ -37,10 +45,12 @@ def main() -> int:
             print(f"FEED {feed['id']}: HTTP {r.status_code}, {len(entries)} entries, {time.monotonic()-t:.1f}s")
         except Exception as exc:  # noqa: BLE001
             print(f"FEED {feed['id']}: FAILED {exc!r}")
-            failures += 1
+            failures += not cand
             continue
+        if entries:
+            print(f"  newest: {entries[0].get('published', entries[0].get('updated', '?'))} | {entries[0].get('title', '')[:90]}")
         if r.status_code != 200 or not entries:
-            failures += 1
+            failures += not cand
             continue
         ok = 0
         for e in entries[:per_feed]:
@@ -53,7 +63,7 @@ def main() -> int:
                   f"images={len(res['images'])} embeds={len(res['embeds'])} "
                   f"{res['skip_reason']} {time.monotonic()-t:.1f}s {e.get('link','')}")
         if ok == 0:
-            failures += 1
+            failures += not cand
     print(f"probe done: {failures} source(s) failing")
     return 1 if failures else 0
 

@@ -11,6 +11,10 @@ permissions:
   contents: write
 
 # Never run two updates at once; a new trigger waits (at most one queued run).
+# Each run has two independent jobs that run in parallel: `update` (Kharkiv,
+# news_feed.xml, state branch `state`) and `update-odesa` (odesa/news_feed.xml,
+# state branch `state-odesa`). Neither waits for the other; publish.sh rebuilds
+# every commit on a freshly fetched main, and only the Kharkiv job squashes.
 concurrency:
   group: update-feed
   cancel-in-progress: false
@@ -66,4 +70,60 @@ jobs:
         run: python -m ci.compact data/state.db
 
       - name: Save state and publish feed
+        run: engine/ci/publish.sh
+
+  update-odesa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TZ: UTC
+      PYTHONUNBUFFERED: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      NEWSFEED_CONFIG: regions/odesa/config.yaml
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: engine/requirements.txt
+
+      - name: Install dependencies
+        run: pip install --disable-pip-version-check -q -r engine/requirements.txt
+
+      # Same model and cache key as the Kharkiv job (shared cache entry).
+      - name: Cache semantic dedup model
+        uses: actions/cache@v6
+        with:
+          path: engine/data/models
+          key: hf-e5-small-q-761b726d
+
+      - name: Restore state.db from the state-odesa branch
+        run: |
+          git fetch --no-tags origin +refs/heads/state-odesa:refs/remotes/origin/state-odesa
+          mkdir -p engine/data/odesa
+          git show origin/state-odesa:state.db > engine/data/odesa/state.db
+          test -s engine/data/odesa/state.db
+          ls -l engine/data/odesa/state.db
+
+      - name: Fetch, scrape, filter, dedup, build feed
+        working-directory: engine
+        run: python -m newsfeed
+
+      - name: Compact state.db (old bodies and run history only)
+        working-directory: engine
+        run: python -m ci.compact data/odesa/state.db
+
+      - name: Save state and publish feed
+        env:
+          STATE_BRANCH: state-odesa
+          STATE_DB: engine/data/odesa/state.db
+          FEED_SRC: engine/output/odesa/feed.xml
+          FEED_DEST: odesa/news_feed.xml
+          FEED_LABEL: Update Odesa feed
+          SQUASH: '0'
         run: engine/ci/publish.sh

@@ -8,6 +8,12 @@ on:
       per_feed:
         description: Articles to scrape per feed
         default: '2'
+      config:
+        description: Region config (config.yaml = Kharkiv, regions/odesa/config.yaml = Odesa)
+        default: config.yaml
+      extra:
+        description: Extra candidate feed URLs, space-separated (not counted as failures)
+        default: ''
 
 permissions:
   contents: read
@@ -26,6 +32,11 @@ jobs:
       - run: pip install --disable-pip-version-check -q -r engine/requirements.txt
       - name: Probe
         working-directory: engine
+        env:
+          NEWSFEED_CONFIG: ${{ inputs.config }}
+          PER_FEED: ${{ inputs.per_feed }}
+          EXTRA: ${{ inputs.extra }}
         run: |
           curl -s https://ipinfo.io/country || true
-          python -m ci.probe "${{ inputs.per_feed }}"
+          # shellcheck disable=SC2086
+          python -m ci.probe "$PER_FEED" $EXTRA
