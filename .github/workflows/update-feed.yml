@@ -24,12 +24,12 @@ jobs:
       PYTHONUNBUFFERED: '1'
       HF_HUB_DISABLE_TELEMETRY: '1'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: main
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.13'
           cache: pip
@@ -41,14 +41,17 @@ jobs:
       # Semantic dedup model (Xenova/multilingual-e5-small, quantized ONNX, ~135 MB).
       # Pinned revision in engine/config.yaml / semantic_dedup.py; bump the key if it changes.
       - name: Cache semantic dedup model
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: engine/data/models
           key: hf-e5-small-q-761b726d
 
       - name: Restore state.db from the state branch
         run: |
-          git fetch --no-tags --depth=1 origin +refs/heads/state:refs/remotes/origin/state
+          # No --depth: a shallow fetch marks the whole repo shallow, which can make
+          # later pushes to main fail with "missing necessary objects". The state
+          # branch is a single commit, so a full fetch costs the same.
+          git fetch --no-tags origin +refs/heads/state:refs/remotes/origin/state
           mkdir -p engine/data
           git show origin/state:state.db > engine/data/state.db
           test -s engine/data/state.db
