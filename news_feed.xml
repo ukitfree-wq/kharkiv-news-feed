@@ -9,7 +9,7 @@
 <link>https://infocity.kharkiv.ua/</link>
 <description>Повний текст, світлини та вбудовані відео з харківських видань.</description>
 <language>uk</language>
-<lastBuildDate>Fri, 27 Nov 2026 14:01:42 +0000</lastBuildDate>
+<lastBuildDate>Fri, 27 Nov 2026 14:06:08 +0000</lastBuildDate>
 <ttl>5</ttl>
 <generator>pl-news-feed/1.0</generator>
 <atom:link href="https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml" rel="self" type="application/rss+xml"/>
@@ -5197,27 +5197,6 @@
 <enclosure url="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_15-55-06.jpg" type="image/jpeg" length="0"/>
 <media:thumbnail url="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_15-55-06.jpg"/>
 <media:content url="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_15-55-06.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-<title>Реактивний дрон впав у Немишлянському районі Харкова</title>
-<link>https://sq.com.ua/ukr/novini/24.11.2026/reaktivnii-dron-vpav-u-nemislyanskomu-raioni-xarkova</link>
-<guid isPermaLink="true">https://sq.com.ua/ukr/novini/24.11.2026/reaktivnii-dron-vpav-u-nemislyanskomu-raioni-xarkova</guid>
-<pubDate>Tue, 24 Nov 2026 14:05:00 +0000</pubDate>
-<dc:creator>Status Quo</dc:creator>
-<source url="https://sq.com.ua/ukr/novini/24.11.2026/reaktivnii-dron-vpav-u-nemislyanskomu-raioni-xarkova">Status Quo</source>
-<category>Харків</category>
-<category>extraction:ok</category>
-<description><![CDATA[<p><img alt="" src="https://pwg.sq.com.ua/upload/2026/07/04/20260704102802-f48a85ce.jpg"/></p>
-<div><p>24 листопада о 15:09 росіяни реактивним дроном учили по Немишлянському району Харкова. Зафіксовано падіння реактивного ворожого дрона на відкриту територію. За даними міського голови Ігоря Терехова, наразі без наслідків, але дослідження місця падіння триває.</p>
-<p>Годиною раніше російські війська також реактивним дроном атакували Слобідський район. Про обстріли Харкова 23-24 листопада та минулого тижня — <a href="https://www.sq.com.ua/ukr/novini/24.11.2026/24-listopada-rosiyani-vdarili-po-xarkovu-reaktivnim-saxedom">у нашому матеріалі</a>.</p>
-<p><strong>Джерело:</strong> ТГ-канал Ігоря Терехова</p></div>]]></description>
-<content:encoded><![CDATA[<p><img alt="" src="https://pwg.sq.com.ua/upload/2026/07/04/20260704102802-f48a85ce.jpg"/></p>
-<div><p>24 листопада о 15:09 росіяни реактивним дроном учили по Немишлянському району Харкова. Зафіксовано падіння реактивного ворожого дрона на відкриту територію. За даними міського голови Ігоря Терехова, наразі без наслідків, але дослідження місця падіння триває.</p>
-<p>Годиною раніше російські війська також реактивним дроном атакували Слобідський район. Про обстріли Харкова 23-24 листопада та минулого тижня — <a href="https://www.sq.com.ua/ukr/novini/24.11.2026/24-listopada-rosiyani-vdarili-po-xarkovu-reaktivnim-saxedom">у нашому матеріалі</a>.</p>
-<p><strong>Джерело:</strong> ТГ-канал Ігоря Терехова</p></div>]]></content:encoded>
-<enclosure url="https://pwg.sq.com.ua/upload/2026/07/04/20260704102802-f48a85ce.jpg" type="image/jpeg" length="0"/>
-<media:thumbnail url="https://pwg.sq.com.ua/upload/2026/07/04/20260704102802-f48a85ce.jpg"/>
-<media:content url="https://pwg.sq.com.ua/upload/2026/07/04/20260704102802-f48a85ce.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
