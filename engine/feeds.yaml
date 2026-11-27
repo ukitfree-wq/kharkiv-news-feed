@@ -1,7 +1,8 @@
 # Feed list for the aggregator.
 # Enable or disable entries with `enabled`. Add any RSS/Atom URL.
 #
-# The five Kharkiv sources below are the active feeds.
+# Active Kharkiv sources. List order does not affect dedup: the earliest
+# publisher of a story always wins (see newsfeed/dedup.py and semantic_dedup.py).
 # Google News Poland entries are kept as disabled examples.
 
 feeds:
@@ -34,6 +35,33 @@ feeds:
     enabled: true
     category: Харків
     name: Мій Харків
+
+  - id: objectiv
+    url: https://www.objectiv.tv/uk/feed/
+    enabled: true
+    category: Харків
+    name: Обʼєктив
+
+  # National Suspilne feed; only items whose title matches title_keywords.txt
+  # are kept, and other regional newsrooms (/chernihiv/, /lviv/, …) are dropped.
+  - id: suspilne
+    url: https://suspilne.media/rss/all.rss
+    enabled: true
+    category: Харків
+    name: Суспільне Харків
+
+  # Use nakypilo.ua, not the stale nakipelo.ua/feed/ (stuck in May 2024).
+  - id: nakypilo
+    url: https://nakypilo.ua/feed/
+    enabled: true
+    category: Харків
+    name: Накипіло
+
+  - id: atn
+    url: https://atn.ua/feed/
+    enabled: true
+    category: Харків
+    name: АТН
 
   # --- Disabled examples (Google News Poland) ---
   # Swap enabled flags (and region in config.yaml) to use these instead.

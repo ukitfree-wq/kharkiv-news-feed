@@ -38,6 +38,8 @@ from newsfeed.extract import extract_many
 from newsfeed.feed_write import render_feed, write_feed
 from newsfeed.keywords import compile_keywords, load_title_keywords, near_misses, title_match
 from newsfeed.rss_fetch import fetch_feeds
+from newsfeed.sites import item_url_allowed, profile_for
+from newsfeed.semantic_dedup import extract_dates
 from newsfeed.store import (
     connect,
     feed_candidates,
@@ -107,9 +109,16 @@ def _choose_existing_match(item: dict, recent: list[dict], title_th: int, conten
             return other, "duplicate_url"
     tnorm = item.get("title_norm") or ""
     if tnorm:
+        item_title = item.get("title") or ""
+        item_dates = extract_dates(item_title)
         for other in recent:
-            if titles_similar(tnorm, other.get("title_norm") or "", title_th):
-                return other, "duplicate_title"
+            if not titles_similar(tnorm, other.get("title_norm") or "", title_th):
+                continue
+            # Objectiv daily wraps / forecasts: same boilerplate, different calendar dates.
+            other_dates = extract_dates(other.get("title") or "")
+            if item_dates and other_dates and item_dates.isdisjoint(other_dates):
+                continue
+            return other, "duplicate_title"
     fp = item.get("minhash") or []
     text = item.get("content_text") or ""
     if fp and any(fp) and len(text) >= 200:
@@ -241,6 +250,7 @@ def main(argv: list[str] | None = None) -> int:
         "keyword_matched": 0,
         "keyword_filtered": 0,
         "filtered_keyword": 0,
+        "filtered_section": 0,
         "purged_from_feed": 0,
         "restored_to_feed": 0,
         "decoded": 0,
@@ -342,22 +352,33 @@ def main(argv: list[str] | None = None) -> int:
     still_new = []
     for it in new_items:
         title = it.get("title") or it.get("raw_title") or ""
+        url = it.get("canonical_url") or it.get("source_url") or ""
         if title_match(title, keyword_index):
-            still_new.append(it)
+            if item_url_allowed(url, profile_for(url)):
+                still_new.append(it)
+                continue
+            stats["filtered_section"] += 1
+            it["extraction_status"] = "filtered_section"
+            it["skip_reason"] = "filtered_section"
+            if not it.get("canonical_url"):
+                it["canonical_url"] = url
+            insert_article(conn, _persist_fields(it, started))
+            log.info("filter (other regional section): %s", title[:100])
             continue
         stats["filtered_keyword"] += 1
         it["extraction_status"] = "filtered_keyword"
         it["skip_reason"] = "filtered_keyword"
         if not it.get("canonical_url"):
-            it["canonical_url"] = it.get("source_url") or ""
+            it["canonical_url"] = url
         insert_article(conn, _persist_fields(it, started))
         log.info("filter (no title keyword): %s", title[:100])
     new_items = still_new
     conn.commit()
     log.info(
-        "%d new items left to consider after title filter (%d marked filtered_keyword)",
+        "%d new items left to consider after title filter (%d marked filtered_keyword, %d filtered_section)",
         len(new_items),
         stats["filtered_keyword"],
+        stats["filtered_section"],
     )
 
     # Decode Google News links only.

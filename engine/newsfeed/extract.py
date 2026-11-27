@@ -197,8 +197,18 @@ def _is_placeholder(url: str) -> bool:
     return "image/svg+xml" in url or url.startswith("about:")
 
 
+_DATA_WIDTH_SRC = re.compile(r"^data-(\d+)-src$", re.I)
+
+
+def _attr_str(val) -> str:
+    if isinstance(val, list):
+        return str(val[0]) if val else ""
+    return str(val) if val else ""
+
+
 def image_url(img: Tag, base: str) -> str:
     """Resolve a real image URL, including lazy-loaded data-src (2day.kh.ua)."""
+    # Lazy-load attributes are the real URL when src is a placeholder SVG.
     for attr in (
         "data-src",
         "data-lazy-src",
@@ -206,22 +216,47 @@ def image_url(img: Tag, base: str) -> str:
         "data-full-url",
         "data-lazy",
         "data-bg",
-        "src",
     ):
-        val = img.get(attr)
-        if isinstance(val, list):
-            val = val[0] if val else ""
+        val = _attr_str(img.get(attr))
         if val and not _is_placeholder(val):
             return _abs(val, base)
+
+    # Prefer the widest explicit variant (Suspilne data-1040-src / srcset).
+    candidates: list[tuple[int, str]] = []
+    best_w = -1
+    best_src = ""
+    for attr, val in img.attrs.items():
+        m = _DATA_WIDTH_SRC.match(str(attr))
+        if not m:
+            continue
+        src = _attr_str(val)
+        if not src or _is_placeholder(src):
+            continue
+        width = int(m.group(1))
+        if width > best_w:
+            best_w = width
+            best_src = src
+    if best_src:
+        candidates.append((best_w, best_src))
     for attr in ("data-srcset", "srcset"):
         val = img.get(attr)
         if not val:
             continue
-        parts = [p.strip().split(" ")[0] for p in str(val).split(",") if p.strip()]
-        parts = [p for p in parts if p and not _is_placeholder(p)]
-        if parts:
-            return _abs(parts[-1], base)
-    return ""
+        for part in str(val).split(","):
+            bits = part.strip().split()
+            if not bits or _is_placeholder(bits[0]):
+                continue
+            width = 0
+            if len(bits) >= 2 and bits[1].endswith("w") and bits[1][:-1].isdigit():
+                width = int(bits[1][:-1])
+            candidates.append((width, bits[0]))
+    src = _attr_str(img.get("src"))
+    if src and not _is_placeholder(src):
+        candidates.append((0, src))
+    if not candidates:
+        return ""
+    url = max(candidates, key=lambda item: item[0])[1]
+    return _abs(url, base)
 
 
 def _good_image(url: str) -> bool:
@@ -355,6 +390,42 @@ def _strip_junk(root: Tag, selectors: list[str]) -> None:
     for sel in selectors:
         for node in root.select(sel):
             node.decompose()
+
+
+# Subscribe / share / "read also" lines that leak into the article body.
+_BOILER_START_RE = re.compile(
+    r"^\s*("
+    r"підпишіться(\s+на)?|"
+    r"підписуйтесь(\s+на)?|"
+    r"підписатися(\s+на)?|"
+    r"читайте також|"
+    r"читати також|"
+    r"див(іться|ись) також|"
+    r"вам може бути цікаво|"
+    r"більше новин|"
+    r"рекомендуємо|"
+    r"поділитися|"
+    r"поделиться|"
+    r"share this|"
+    r"читать на русском|"
+    r"total\s+\d+\s+shares"
+    r")\b",
+    re.I,
+)
+
+
+def _strip_boilerplate(root: Tag) -> None:
+    for tag in list(root.find_all(["p", "h2", "h3", "h4", "div", "span", "a", "section", "aside"])):
+        if not getattr(tag, "name", None) or tag.decompose is None:
+            continue
+        # Skip if already removed with a parent.
+        if tag.parent is None:
+            continue
+        text = tag.get_text(" ", strip=True)
+        if not text:
+            continue
+        if _BOILER_START_RE.match(text):
+            tag.decompose()
 
 
 def _lead_images(soup: BeautifulSoup, profile: dict, page_url: str) -> list[str]:
@@ -584,6 +655,7 @@ def extract_article(
 
     if body is not None:
         _strip_junk(body, profile.get("remove") or [])
+        _strip_boilerplate(body)
         _rewrite_images(body, final_url)
 
     lead_from_profile = _lead_images(soup, profile, final_url)
