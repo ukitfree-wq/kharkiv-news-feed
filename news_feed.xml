@@ -9,7 +9,7 @@
 <link>https://infocity.kharkiv.ua/</link>
 <description>Повний текст, світлини та вбудовані відео з харківських видань.</description>
 <language>uk</language>
-<lastBuildDate>Fri, 27 Nov 2026 14:11:22 +0000</lastBuildDate>
+<lastBuildDate>Fri, 27 Nov 2026 14:16:27 +0000</lastBuildDate>
 <ttl>5</ttl>
 <generator>pl-news-feed/1.0</generator>
 <atom:link href="https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml" rel="self" type="application/rss+xml"/>
@@ -5209,27 +5209,6 @@
 <enclosure url="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_12-27-53.jpg" type="image/jpeg" length="0"/>
 <media:thumbnail url="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_12-27-53.jpg"/>
 <media:content url="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_12-27-53.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-<title>У Харкові – проблеми з електропостачанням: не ходять деякі тролейбуси</title>
-<link>https://sq.com.ua/ukr/novini/24.11.2026/u-xarkovi-problemi-z-elektropostacannyam-ne-xodyat-deyaki-troleibusi</link>
-<guid isPermaLink="true">https://sq.com.ua/ukr/novini/24.11.2026/u-xarkovi-problemi-z-elektropostacannyam-ne-xodyat-deyaki-troleibusi</guid>
-<pubDate>Tue, 24 Nov 2026 14:13:00 +0000</pubDate>
-<dc:creator>Status Quo</dc:creator>
-<source url="https://sq.com.ua/ukr/novini/24.11.2026/u-xarkovi-problemi-z-elektropostacannyam-ne-xodyat-deyaki-troleibusi">Status Quo</source>
-<category>Харків</category>
-<category>extraction:ok</category>
-<description><![CDATA[<p><img alt="" src="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_15-55-06.jpg"/></p>
-<div><p>У зв’язку з проблемами в енергопостачанні тимчасово не курсують тролейбуси від пр. Дзюби до вул. Дудинської. Тролейбуси №11 та 27 рухаються від вул. Новий Побут до майдану Конституції.</p>
-<p>Від пр. Дзюби до ст. метро «Холодна гора» тимчасово курсує автобус (через пр. Ново-Баварський, вул. Китаєнка, пр. Любові Малої та вул. Дудинської).</p>
-<p><strong>Джерело:</strong> <a href="https://t.me/citykharkivua/98252">Харківська міськрада</a></p></div>]]></description>
-<content:encoded><![CDATA[<p><img alt="" src="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_15-55-06.jpg"/></p>
-<div><p>У зв’язку з проблемами в енергопостачанні тимчасово не курсують тролейбуси від пр. Дзюби до вул. Дудинської. Тролейбуси №11 та 27 рухаються від вул. Новий Побут до майдану Конституції.</p>
-<p>Від пр. Дзюби до ст. метро «Холодна гора» тимчасово курсує автобус (через пр. Ново-Баварський, вул. Китаєнка, пр. Любові Малої та вул. Дудинської).</p>
-<p><strong>Джерело:</strong> <a href="https://t.me/citykharkivua/98252">Харківська міськрада</a></p></div>]]></content:encoded>
-<enclosure url="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_15-55-06.jpg" type="image/jpeg" length="0"/>
-<media:thumbnail url="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_15-55-06.jpg"/>
-<media:content url="https://www.sq.com.ua/img/news/2026/11/24/photo_2026-11-24_15-55-06.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
