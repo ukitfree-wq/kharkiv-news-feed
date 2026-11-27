@@ -9,7 +9,7 @@
 <link>https://infocity.kharkiv.ua/</link>
 <description>Повний текст, світлини та вбудовані відео з харківських видань.</description>
 <language>uk</language>
-<lastBuildDate>Fri, 27 Nov 2026 12:36:17 +0000</lastBuildDate>
+<lastBuildDate>Fri, 27 Nov 2026 12:41:12 +0000</lastBuildDate>
 <ttl>5</ttl>
 <generator>pl-news-feed/1.0</generator>
 <atom:link href="https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml" rel="self" type="application/rss+xml"/>
@@ -5149,33 +5149,6 @@
 <enclosure url="https://mykharkov.info/wp-content/uploads/2026/11/1-87.webp" type="image/webp" length="0"/>
 <media:thumbnail url="https://mykharkov.info/wp-content/uploads/2026/11/1-87.webp"/>
 <media:content url="https://mykharkov.info/wp-content/uploads/2026/11/1-87.webp" medium="image" type="image/webp"/>
-</item>
-<item>
-<title>24 листопада росіяни вдарили по Харкову реактивним «Шахедом»</title>
-<link>https://sq.com.ua/ukr/novini/24.11.2026/24-listopada-rosiyani-vdarili-po-xarkovu-reaktivnim-saxedom</link>
-<guid isPermaLink="true">https://sq.com.ua/ukr/novini/24.11.2026/24-listopada-rosiyani-vdarili-po-xarkovu-reaktivnim-saxedom</guid>
-<pubDate>Tue, 24 Nov 2026 12:39:00 +0000</pubDate>
-<dc:creator>Status Quo</dc:creator>
-<source url="https://sq.com.ua/ukr/novini/24.11.2026/24-listopada-rosiyani-vdarili-po-xarkovu-reaktivnim-saxedom">Status Quo</source>
-<category>Харків</category>
-<category>extraction:ok</category>
-<description><![CDATA[<p><img alt="" src="https://pwg.sq.com.ua/upload/2026/08/01/20260801111012-46e6b884.jpg"/></p>
-<div><p>24 листопада о 14:06 російські війська атакували Слобідський район Харкова. Міський голова Ігор Терехов заявив, що наслідки удару встановлюються.</p>
-<p>Учора, 23 листопада, росіяни завдали серії ударів по місту. У Шевченківському районі <a href="https://www.sq.com.ua/ukr/novini/23.11.2026/udar-po-bagatopoverxivci-u-xarkovi-foto-naslidkiv">дрон влучив у другий поверх житлового багатоповерхового будинку</a>. Двічі безпілотниками був атакований Індустріальний район. Гібридними ракетами «Бандероль» росіяни били по Основ’янському та Холодногірському районах.</p>
-<h3>Удари по Харкову минулого тижня</h3>
-<p>З 16 по 22 листопада російські війська завдали 18 ударів по Харкову. Вони використали 2 РСЗВ «Торнадо-2» та безпілотники різного типу. Під ударами були сім районів із дев’яти.</p>
-<p>Постраждали 27 людей, серед них двоє дітей. Ніхто не загинув.</p>
-<p>Джерело: <a href="https://t.me/ihor_terekhov/5052">ТГ-канал Ігоря Терехова</a></p></div>]]></description>
-<content:encoded><![CDATA[<p><img alt="" src="https://pwg.sq.com.ua/upload/2026/08/01/20260801111012-46e6b884.jpg"/></p>
-<div><p>24 листопада о 14:06 російські війська атакували Слобідський район Харкова. Міський голова Ігор Терехов заявив, що наслідки удару встановлюються.</p>
-<p>Учора, 23 листопада, росіяни завдали серії ударів по місту. У Шевченківському районі <a href="https://www.sq.com.ua/ukr/novini/23.11.2026/udar-po-bagatopoverxivci-u-xarkovi-foto-naslidkiv">дрон влучив у другий поверх житлового багатоповерхового будинку</a>. Двічі безпілотниками був атакований Індустріальний район. Гібридними ракетами «Бандероль» росіяни били по Основ’янському та Холодногірському районах.</p>
-<h3>Удари по Харкову минулого тижня</h3>
-<p>З 16 по 22 листопада російські війська завдали 18 ударів по Харкову. Вони використали 2 РСЗВ «Торнадо-2» та безпілотники різного типу. Під ударами були сім районів із дев’яти.</p>
-<p>Постраждали 27 людей, серед них двоє дітей. Ніхто не загинув.</p>
-<p>Джерело: <a href="https://t.me/ihor_terekhov/5052">ТГ-канал Ігоря Терехова</a></p></div>]]></content:encoded>
-<enclosure url="https://pwg.sq.com.ua/upload/2026/08/01/20260801111012-46e6b884.jpg" type="image/jpeg" length="0"/>
-<media:thumbnail url="https://pwg.sq.com.ua/upload/2026/08/01/20260801111012-46e6b884.jpg"/>
-<media:content url="https://pwg.sq.com.ua/upload/2026/08/01/20260801111012-46e6b884.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
