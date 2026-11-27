@@ -816,7 +816,9 @@ def extract_article(
         # og:image often a crop of the lead; put it first only if we have no lead yet
         if not lead_from_profile:
             images.insert(0, og_image)
-        else:
+        elif not profile.get("skip_og_when_lead"):
+            # Profile option skip_og_when_lead: the og:image is only a social-card
+            # crop of the lead photo the profile already found (intent.press).
             images.append(og_image)
 
     embeds = classify_embeds(body) if body is not None else []

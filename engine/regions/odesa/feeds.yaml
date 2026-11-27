@@ -53,6 +53,9 @@ feeds:
     name: Одеське життя
 
   # Body and in-text photos come from the site's own JSON API (/api3/news/<id>).
+  # NOTE: www.048.ua answers HTTP 403 to GitHub Actions runners (feed, API and
+  # article pages; US datacenter IPs), so this source is empty in CI while
+  # that block lasts. Kept enabled so it resumes by itself if the block lifts.
   - id: "048"
     url: https://www.048.ua/rss
     enabled: true
@@ -78,3 +81,18 @@ feeds:
     enabled: true
     category: Одеса
     name: Суспільне Одеса
+
+  # Added: Одеса News, Ukrainian edition (the default /feed/ is Russian);
+  # ~25 items/day, feed and page dates agree.
+  - id: on-od
+    url: https://on.od.ua/uk/feed/
+    enabled: true
+    category: Одеса
+    name: Одеса News
+
+  # Added: Інтент (Odesa investigative / city news); ~23 items/day, exact dates.
+  - id: intent
+    url: https://intent.press/rss/
+    enabled: true
+    category: Одеса
+    name: Інтент

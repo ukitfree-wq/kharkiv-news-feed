@@ -305,6 +305,27 @@ SITE_PROFILES: dict[str, dict] = {
         "drop_text_re": r"^(будьте в курсі головних подій|найважливіші події бессарабії|додайте «бессарабія inform»)",
         "truncate_at_re": r"^(раніше ми повідомляли|читайте також)\s*:",
     },
+    "on.od.ua": {
+        # Одеса News (Ukrainian edition /uk/; the default edition is Russian).
+        "strip_comments": True,
+        "name": "Одеса News",
+        "selectors": ["article.main-article div.entry-content", "article div.entry-content"],
+        # No lead selector: the og:image is the same file, percent-encoded like the body images.
+        "lead_image_selectors": [],
+        "remove": ["div.onea-related-links", ".sharedaddy", ".share", "script", "ins"],
+        "drop_text_re": r"^(стежте за важливими новинами|следите за важными новостями)",
+    },
+    "intent.press": {
+        # Інтент: the article page is div#article-text-<slug>; the headline,
+        # date and lead photo sit in the div.blog_list_item before it.
+        "strip_comments": True,
+        "name": "Інтент",
+        "selectors": ['#type-cycle-0 div[id^="article-text-"]', 'div[id^="article-text-"]'],
+        "lead_image_selectors": ["#type-cycle-0 div.blog_list_item picture img", "div.blog_list_item picture img"],
+        "skip_og_when_lead": True,
+        "remove": ['div[style*="background:#eeeeee"]', "p.italic.font-light.text-end", "script", "ins"],
+        "drop_text_re": r"^(читати також|читайте також)\s*:",
+    },
     "od-news.com": {
         "strip_comments": True,
         "name": "Od-news",
