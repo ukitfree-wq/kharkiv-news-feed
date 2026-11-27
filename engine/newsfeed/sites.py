@@ -238,6 +238,8 @@ SITE_PROFILES: dict[str, dict] = {
         # Other regional newsrooms. National/vertical paths (/sport/, /culture/,
         # numeric ids) still pass if the title keyword filter matches.
         "drop_first_path_segments": SUSPILNE_OTHER_REGIONS,
+        # Boilerplate tail ("Читайте нас у Telegram…", "Стежте за головними новинами…").
+        "truncate_at_re": r"^(читайте нас у|стежте за головними новинами)\b",
     },
 
     # ---- Odesa region (engine/regions/odesa) ----
