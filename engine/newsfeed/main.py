@@ -260,6 +260,13 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     conn = connect(paths["database"])
+    mirror = None
+    try:
+        from newsfeed.image_mirror import from_config as _mirror_from_config
+
+        mirror = _mirror_from_config(cfg, ROOT.parent, paths["output_feed"])
+    except Exception as exc:
+        log.warning("image mirror disabled for this run: %s", exc)
     stats = {
         "feeds_ok": 0,
         "feeds_not_modified": 0,
@@ -666,6 +673,11 @@ def main(argv: list[str] | None = None) -> int:
             )
             continue
 
+        if mirror is not None:
+            try:
+                mirror.apply(item)
+            except Exception as exc:
+                log.warning("image mirror failed for %s: %s", (item.get("title") or "")[:60], exc)
         row_id = insert_article(conn, _persist_fields(item, started))
         item["id"] = row_id
         recent.append(item)
@@ -744,6 +756,11 @@ def main(argv: list[str] | None = None) -> int:
         ttl_minutes=int(window.get("ttl_minutes") or 5),
     )
     write_feed(xml_text, paths["output_feed"], paths.get("extra_output_feed"))
+    if mirror is not None:
+        try:
+            mirror.finalize(rows)
+        except Exception as exc:
+            log.error("image mirror staging failed: %s", exc)
 
     try:
         import feedparser

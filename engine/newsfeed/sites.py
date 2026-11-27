@@ -233,6 +233,7 @@ SITE_PROFILES: dict[str, dict] = {
             "article.two-v-sctn",
             "article.c-article-card",
             "div.hdr-media-list",
+            "div.read-m",  # «Читати ще» related-article cards inside the text
             "div.hdr-media-cmpnt",
             "nav",
             "header",

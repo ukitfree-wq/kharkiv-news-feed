@@ -18,6 +18,10 @@
 #   FEED_DEST     path of the published feed on main   (news_feed.xml)
 #   FEED_LABEL    commit message prefix                (Update feed)
 #   SQUASH        1 = this job does the daily squash   (1); exactly one job may.
+#   IMG_SRC       mirrored images staged by the engine (engine/output/img)
+#   IMG_DEST      their directory on main / Pages      (img)
+# IMG_DEST is replaced by IMG_SRC on every publish (files of items that left the
+# feed disappear); when IMG_SRC does not exist IMG_DEST is left alone.
 # Several region jobs run in parallel and all push to main, so every publish
 # commit is (re)built on a freshly fetched main and the squash uses a lease.
 set -euo pipefail
@@ -28,6 +32,15 @@ FEED_SRC="${FEED_SRC:-engine/output/feed.xml}"
 FEED_DEST="${FEED_DEST:-news_feed.xml}"
 FEED_LABEL="${FEED_LABEL:-Update feed}"
 SQUASH="${SQUASH:-1}"
+IMG_SRC="${IMG_SRC:-engine/output/img}"
+IMG_DEST="${IMG_DEST:-img}"
+
+sync_images() {
+  [[ -d "$IMG_SRC" ]] || return 0
+  rm -rf "$IMG_DEST"
+  mkdir -p "$IMG_DEST"
+  cp -a "$IMG_SRC/." "$IMG_DEST/"
+}
 
 KIEV_TZ="Europe/Kyiv"
 kiev_now() { TZ="$KIEV_TZ" date '+%Y-%m-%d %H:%M:%S'; }
@@ -84,6 +97,7 @@ fi
 # ---- 2. feed on main ----
 mkdir -p "$(dirname "$FEED_DEST")"
 cp -f "$FEED_SRC" "$FEED_DEST"
+sync_images
 items=$(grep -o '<item[ >]' "$FEED_DEST" | wc -l)
 when="$(kiev_now) Europe/Kiev"
 
@@ -95,9 +109,8 @@ first_after_base=$(TZ="$KIEV_TZ" git log --reverse --format=%cd --date=format-lo
 count_after_base=$(git rev-list --count "$base..HEAD")
 
 changed=1
-git diff --quiet -- "$FEED_DEST" && changed=0
-# A new region's feed file is untracked until its first publish.
-[[ "$changed" -eq 0 && -z "$(git ls-files -- "$FEED_DEST")" ]] && changed=1
+# Untracked files count too (a new region's feed, new mirrored images).
+[[ -z "$(git status --porcelain --untracked-files=all -- "$FEED_DEST" "$IMG_DEST")" ]] && changed=0
 need_squash=0
 if [[ "$SQUASH" == "1" && "$count_after_base" -gt 1 && -n "$first_after_base" && "$first_after_base" != "$today" ]]; then
   need_squash=1
@@ -129,6 +142,12 @@ if [[ "$need_squash" -eq 1 ]]; then
     fi
     GIT_INDEX_FILE="$tmp_index" git read-tree "$expected"
     GIT_INDEX_FILE="$tmp_index" git update-index --add --cacheinfo "100644,$new_feed_blob,$FEED_DEST"
+    if [[ -d "$IMG_SRC" ]]; then
+      GIT_INDEX_FILE="$tmp_index" git rm -r -q --cached --ignore-unmatch -- "$IMG_DEST"
+      while IFS= read -r -d '' f; do
+        GIT_INDEX_FILE="$tmp_index" git update-index --add --cacheinfo "100644,$(git hash-object -w "$f"),$f"
+      done < <(find "$IMG_DEST" -type f -print0)
+    fi
     tree=$(GIT_INDEX_FILE="$tmp_index" git write-tree)
     commit=$(git commit-tree "$tree" -p "$sq_base" -m "$msg")
     folded=$(git rev-list --count "$sq_base..$expected")
@@ -161,8 +180,10 @@ rebuild_on_main() {
   git reset -q --hard "$remote"
   mkdir -p "$(dirname "$FEED_DEST")"
   cp -f "$FEED_SRC" "$FEED_DEST"
-  git add "$FEED_DEST"
-  git diff --cached --quiet -- "$FEED_DEST" && return 2
+  sync_images
+  git add -A -- "$FEED_DEST"
+  [[ -d "$IMG_SRC" ]] && git add -A -- "$IMG_DEST"
+  git diff --cached --quiet -- "$FEED_DEST" "$IMG_DEST" && return 2
   git commit -q -m "$msg"
   return 0
 }

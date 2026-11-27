@@ -126,6 +126,15 @@ dedup:
 
 feed_self_link: "https://ukitfree-wq.github.io/kharkiv-news-feed/odesa/news_feed.xml"
 
+# Images on these hosts are copied next to the feed on GitHub Pages (new items
+# only) because the hosts refuse WordPress importers: cdn4.suspilne.media answers
+# 403 to an empty User-Agent, od-news.com and 2day.kh.ua to a foreign Referer.
+# See engine/newsfeed/image_mirror.py. Every other image keeps its original URL.
+image_mirror:
+  hosts: [cdn4.suspilne.media, od-news.com, 2day.kh.ua]
+  public_dir: odesa/img
+  base_url: "https://ukitfree-wq.github.io/kharkiv-news-feed/odesa/img/"
+
 paths:
   database: data/odesa/state.db
   output_feed: output/odesa/feed.xml

@@ -130,5 +130,7 @@ jobs:
           FEED_SRC: engine/output/odesa/feed.xml
           FEED_DEST: odesa/news_feed.xml
           FEED_LABEL: Update Odesa feed
+          IMG_SRC: engine/output/odesa/img
+          IMG_DEST: odesa/img
           SQUASH: '0'
         run: engine/ci/publish.sh

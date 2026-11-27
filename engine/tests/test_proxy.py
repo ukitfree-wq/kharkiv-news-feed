@@ -42,3 +42,39 @@ def test_rewrites_only_048(monkeypatch):
     assert seen["key"] == "secret-key"
     assert resp.url == "https://www.048.ua/news/1/x"
     assert "secret-key" not in repr(s.get_adapter("https://048.ua/"))
+
+
+CHALLENGE = (b'<!DOCTYPE html><html><head><title>One moment, please...</title></head>'
+             b"<body><script>var P='wsidchk';</script></body></html>")
+
+
+def test_challenge_falls_back_to_direct(monkeypatch, caplog):
+    monkeypatch.setenv("PROXY_048_URL", "https://relay.example/feedproxy-048.php")
+    monkeypatch.setenv("PROXY_048_KEY", "secret-key")
+    monkeypatch.setattr(proxy.RelayAdapter, "disabled_reason", None)
+    s = proxy.install(requests.Session())
+    calls = []
+
+    def fake_send(self, request, **kw):
+        calls.append((request.url, request.headers.get("X-Proxy-Key")))
+        r = requests.Response()
+        r.headers["Content-Type"] = "text/html"
+        if request.url.startswith("https://relay.example/"):
+            r.status_code, r._content = 200, CHALLENGE
+        else:
+            r.status_code, r._content = 403, b"blocked"
+        r.url = request.url
+        return r
+
+    monkeypatch.setattr(HTTPAdapter, "send", fake_send)
+    with caplog.at_level("WARNING"):
+        r1 = s.get("https://www.048.ua/rss")
+        r2 = s.get("https://048.ua/news/1/x")
+    assert r1.status_code == 403 and r1.url == "https://www.048.ua/rss"
+    # first: relay then direct; second: direct only (relay disabled for the run)
+    assert [u.split("?")[0] for u, _ in calls] == [
+        "https://relay.example/feedproxy-048.php", "https://www.048.ua/rss", "https://048.ua/news/1/x"]
+    assert calls[1][1] is None and calls[2][1] is None
+    msgs = [r.getMessage() for r in caplog.records if "relay unusable" in r.getMessage()]
+    assert len(msgs) == 1 and "anti-bot challenge" in msgs[0] and "secret-key" not in msgs[0]
+    assert r2.status_code == 403
