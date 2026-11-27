@@ -65,6 +65,10 @@ SITE_PROFILES: dict[str, dict] = {
             ".sharedaddy",
             ".metas",
         ],
+        # Social-links promo paragraph ("Читайте нас у Facebook, Telegram, … TikTok.").
+        # It often sits mid-article, so only that block is removed (the whole-text
+        # match keeps any wrapper with real content).
+        "drop_text_re": r"^читайте нас у\b[^\n]{0,250}?(facebook|telegram|instagram|youtube|tiktok)[^\n]{0,80}$",
     },
     "www.sq.com.ua": {
         "name": "Status Quo",
