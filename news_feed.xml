@@ -9,7 +9,7 @@
 <link>https://infocity.kharkiv.ua/</link>
 <description>Повний текст, світлини та вбудовані відео з харківських видань.</description>
 <language>uk</language>
-<lastBuildDate>Sat, 28 Nov 2026 12:36:10 +0000</lastBuildDate>
+<lastBuildDate>Sat, 28 Nov 2026 12:41:36 +0000</lastBuildDate>
 <ttl>5</ttl>
 <generator>pl-news-feed/1.0</generator>
 <atom:link href="https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml" rel="self" type="application/rss+xml"/>
@@ -45,6 +45,41 @@
 <media:content url="https://infocity.kharkiv.ua/wp-content/uploads/2026/11/image-22.png" medium="image" type="image/png"/>
 <media:content url="https://infocity.kharkiv.ua/wp-content/uploads/2026/11/image-23.png" medium="image" type="image/png"/>
 <media:content url="https://infocity.kharkiv.ua/wp-content/uploads/2026/11/image-24.png" medium="image" type="image/png"/>
+</item>
+<item>
+<title>У громаді на Харківщині пропонують назвати вулицю на честь Корпусу &quot;Хартія&quot;</title>
+<link>https://2day.kh.ua/ua/kharkow/na-chest-viyskovykh-khochut-nazvaty-vulytsyu-na-kharkivshchyni</link>
+<guid isPermaLink="true">https://2day.kh.ua/ua/kharkow/na-chest-viyskovykh-khochut-nazvaty-vulytsyu-na-kharkivshchyni</guid>
+<pubDate>Sat, 28 Nov 2026 12:21:35 +0000</pubDate>
+<dc:creator>Харків Тудей</dc:creator>
+<source url="https://2day.kh.ua/ua/kharkow/na-chest-viyskovykh-khochut-nazvaty-vulytsyu-na-kharkivshchyni">Харків Тудей</source>
+<category>Харків</category>
+<category>extraction:ok</category>
+<description><![CDATA[<p><img alt="" src="https://ukitfree-wq.github.io/kharkiv-news-feed/img/fffae587e155a53067c5.jpg"/></p>
+<div>
+<div> <div>
+<div><p><strong>У Наталинський громаді проведуть громадське обговорення щодо перейменування вулиці.</strong></p>
+<p>Вулицю Новопроложену пропонують назвати на честь Корпусу "Хартія". Обговорення триватиме до 27 січня 2027 року.</p>
+<p>Про проведення обговорення <a href="https://natalynska-gromada.gov.ua/news/1795697305/">йдеться</a> на сайті Наталинської сільської військової адміністрації. </p>
+<p>Взяти участь в опитування можна за <a href="https://docs.google.com/forms/d/e/1FAIpQLSfCU1l4D3WFKFkr11xugBEHjFJZOPgnxS9B4lNzwwNoWCgdIg/viewform">посиланням</a>.</p>
+<p>Як писав KHARKIV Today, <a href="https://2day.kh.ua/ua/kharkow/u-peredmisti-kharkova-khochut-nazvaty-vulytsyu-na-chest-khartiyi">Затишна чи Корпусу "Хартія"? У передмісті Харкова хочуть перейменувати вулицю</a>. У Циркунах проводять опитування.</p></div>
+</div>
+</div>
+</div>]]></description>
+<content:encoded><![CDATA[<p><img alt="" src="https://ukitfree-wq.github.io/kharkiv-news-feed/img/fffae587e155a53067c5.jpg"/></p>
+<div>
+<div> <div>
+<div><p><strong>У Наталинський громаді проведуть громадське обговорення щодо перейменування вулиці.</strong></p>
+<p>Вулицю Новопроложену пропонують назвати на честь Корпусу "Хартія". Обговорення триватиме до 27 січня 2027 року.</p>
+<p>Про проведення обговорення <a href="https://natalynska-gromada.gov.ua/news/1795697305/">йдеться</a> на сайті Наталинської сільської військової адміністрації. </p>
+<p>Взяти участь в опитування можна за <a href="https://docs.google.com/forms/d/e/1FAIpQLSfCU1l4D3WFKFkr11xugBEHjFJZOPgnxS9B4lNzwwNoWCgdIg/viewform">посиланням</a>.</p>
+<p>Як писав KHARKIV Today, <a href="https://2day.kh.ua/ua/kharkow/u-peredmisti-kharkova-khochut-nazvaty-vulytsyu-na-chest-khartiyi">Затишна чи Корпусу "Хартія"? У передмісті Харкова хочуть перейменувати вулицю</a>. У Циркунах проводять опитування.</p></div>
+</div>
+</div>
+</div>]]></content:encoded>
+<enclosure url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/fffae587e155a53067c5.jpg" type="image/jpeg" length="0"/>
+<media:thumbnail url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/fffae587e155a53067c5.jpg"/>
+<media:content url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/fffae587e155a53067c5.jpg" medium="image" type="image/jpeg"/>
 </item>
 <item>
 <title>Армія рф завдала удару по одному з мікрорайонів Чугуєва</title>
