@@ -9,7 +9,7 @@
 <link>https://infocity.kharkiv.ua/</link>
 <description>Повний текст, світлини та вбудовані відео з харківських видань.</description>
 <language>uk</language>
-<lastBuildDate>Sat, 28 Nov 2026 14:26:15 +0000</lastBuildDate>
+<lastBuildDate>Sat, 28 Nov 2026 14:31:37 +0000</lastBuildDate>
 <ttl>5</ttl>
 <generator>pl-news-feed/1.0</generator>
 <atom:link href="https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml" rel="self" type="application/rss+xml"/>
@@ -7205,77 +7205,6 @@
 <enclosure url="https://www.sq.com.ua/img/news/2026/11/25/930503218_4548004735457337_5805052887576015666_n.jpg" type="image/jpeg" length="0"/>
 <media:thumbnail url="https://www.sq.com.ua/img/news/2026/11/25/930503218_4548004735457337_5805052887576015666_n.jpg"/>
 <media:content url="https://www.sq.com.ua/img/news/2026/11/25/930503218_4548004735457337_5805052887576015666_n.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-<title>У Харкові транспорт ходить з перебоями</title>
-<link>https://2day.kh.ua/ua/kharkow/u-kharkovi-transport-kursuye-z-pereboyamy</link>
-<guid isPermaLink="true">https://2day.kh.ua/ua/kharkow/u-kharkovi-transport-kursuye-z-pereboyamy</guid>
-<pubDate>Wed, 25 Nov 2026 14:30:00 +0000</pubDate>
-<dc:creator>Харків Тудей</dc:creator>
-<source url="https://2day.kh.ua/ua/kharkow/u-kharkovi-transport-kursuye-z-pereboyamy">Харків Тудей</source>
-<category>Харків</category>
-<category>extraction:ok</category>
-<description><![CDATA[<p><img alt="" src="https://ukitfree-wq.github.io/kharkiv-news-feed/img/5f10932bae2450e009db.jpg"/></p>
-<div>
-<div> <div>
-<div><p><strong>25 листопада через перебої з електропостачанням наземний електротранспорт ходить з перебоями. </strong></p>
-<p>Три тролейбусні маршрути тимчасово не працюють, а трамваї курсують зі змінами. Про це<a href="https://t.me/citykharkivua/98294"> повідомили</a> в Харківській міській раді.</p>
-<p>Трамваї курсують за такими маршрутами:</p>
-<ul><li><strong>№3</strong> — від розворотного кола "Залютине" до "Новожанового" через вулицю Полтавський Шлях, Гончарівський бульвар і Москалівську вулицю.</li>
-<li><strong>№5</strong> — від вулиці Одеської до парку Машинобудівників.</li>
-<li><strong>№6</strong> — об'їжджає знеструмлену ділянку через вулицю Академіка Павлова, проспект Героїв Харкова, майдан Захисників України, вулиці Молочну, Гольдбергівську, Москалівську, Гончарівський бульвар, вулиці Полтавський Шлях і Євгена Котляра до вокзалу "Харків-Пасажирський".</li>
-</ul><p><strong>Тролейбуси №3, №6 та №25 </strong>тимчасово не курсують.</p>
-<p>Натомість у місті запустили тимчасові автобуси за маршрутами трамвая №3 і тролейбуса №3. Ще один автобус курсує від вокзалу "Харків-Пасажирський" до станції метро "Захисників України" через вулицю Полтавський Шлях і проспект Героїв Харкова.</p>
-<p>Як раніше писав<a href="https://2day.kh.ua/ua/kharkow/kharkiv-chastkovo-zalyshyvsya-bez-svitla-yaki-prohnozy"> KHARKIV Today</a>, удень 25 листопада російські ракети "Бандероль" атакували Слобідський район Харкова. Після ударів у багатьох житлових районах міста зникло світло, подекуди спостерігалися просідання напруги. У "Харківобленерго" повідомили, що енергетики працюють над відновленням електропостачання.</p></div>
-</div>
-</div>
-</div>
-<p><img alt="" src="https://ukitfree-wq.github.io/kharkiv-news-feed/img/4805df1674b6f2afc40c.jpg"/></p>]]></description>
-<content:encoded><![CDATA[<p><img alt="" src="https://ukitfree-wq.github.io/kharkiv-news-feed/img/5f10932bae2450e009db.jpg"/></p>
-<div>
-<div> <div>
-<div><p><strong>25 листопада через перебої з електропостачанням наземний електротранспорт ходить з перебоями. </strong></p>
-<p>Три тролейбусні маршрути тимчасово не працюють, а трамваї курсують зі змінами. Про це<a href="https://t.me/citykharkivua/98294"> повідомили</a> в Харківській міській раді.</p>
-<p>Трамваї курсують за такими маршрутами:</p>
-<ul><li><strong>№3</strong> — від розворотного кола "Залютине" до "Новожанового" через вулицю Полтавський Шлях, Гончарівський бульвар і Москалівську вулицю.</li>
-<li><strong>№5</strong> — від вулиці Одеської до парку Машинобудівників.</li>
-<li><strong>№6</strong> — об'їжджає знеструмлену ділянку через вулицю Академіка Павлова, проспект Героїв Харкова, майдан Захисників України, вулиці Молочну, Гольдбергівську, Москалівську, Гончарівський бульвар, вулиці Полтавський Шлях і Євгена Котляра до вокзалу "Харків-Пасажирський".</li>
-</ul><p><strong>Тролейбуси №3, №6 та №25 </strong>тимчасово не курсують.</p>
-<p>Натомість у місті запустили тимчасові автобуси за маршрутами трамвая №3 і тролейбуса №3. Ще один автобус курсує від вокзалу "Харків-Пасажирський" до станції метро "Захисників України" через вулицю Полтавський Шлях і проспект Героїв Харкова.</p>
-<p>Як раніше писав<a href="https://2day.kh.ua/ua/kharkow/kharkiv-chastkovo-zalyshyvsya-bez-svitla-yaki-prohnozy"> KHARKIV Today</a>, удень 25 листопада російські ракети "Бандероль" атакували Слобідський район Харкова. Після ударів у багатьох житлових районах міста зникло світло, подекуди спостерігалися просідання напруги. У "Харківобленерго" повідомили, що енергетики працюють над відновленням електропостачання.</p></div>
-</div>
-</div>
-</div>
-<p><img alt="" src="https://ukitfree-wq.github.io/kharkiv-news-feed/img/4805df1674b6f2afc40c.jpg"/></p>]]></content:encoded>
-<enclosure url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/5f10932bae2450e009db.jpg" type="image/jpeg" length="0"/>
-<media:thumbnail url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/5f10932bae2450e009db.jpg"/>
-<media:content url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/5f10932bae2450e009db.jpg" medium="image" type="image/jpeg"/>
-<media:content url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/4805df1674b6f2afc40c.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-<title>Росіяни атакували Харків реактивним дроном та «Бандеролями»</title>
-<link>https://sq.com.ua/ukr/novini/25.11.2026/rosiyani-atakuvali-xarkiv-reaktivnim-dronom-ta-banderolyami</link>
-<guid isPermaLink="true">https://sq.com.ua/ukr/novini/25.11.2026/rosiyani-atakuvali-xarkiv-reaktivnim-dronom-ta-banderolyami</guid>
-<pubDate>Wed, 25 Nov 2026 14:27:00 +0000</pubDate>
-<dc:creator>Status Quo</dc:creator>
-<source url="https://sq.com.ua/ukr/novini/25.11.2026/rosiyani-atakuvali-xarkiv-reaktivnim-dronom-ta-banderolyami">Status Quo</source>
-<category>Харків</category>
-<category>extraction:ok</category>
-<description><![CDATA[<p><img alt="" src="https://pwg.sq.com.ua/upload/2026/07/02/20260702131809-432896ce.jpg"/></p>
-<div><p>25 листопада росіяни тричі атакували Харків. Під ударами було два райони.</p>
-<h3>Слобідський район</h3>
-<p>О 11:12 та 12:48 російські війська завдали двох ударів гібридними ракетами «Бандероль».</p>
-<h3>Індустріальний район</h3>
-<p>О 15:03 було зафіксовано влучення реактивного дрона. Наслідки уточнюються.</p></div>]]></description>
-<content:encoded><![CDATA[<p><img alt="" src="https://pwg.sq.com.ua/upload/2026/07/02/20260702131809-432896ce.jpg"/></p>
-<div><p>25 листопада росіяни тричі атакували Харків. Під ударами було два райони.</p>
-<h3>Слобідський район</h3>
-<p>О 11:12 та 12:48 російські війська завдали двох ударів гібридними ракетами «Бандероль».</p>
-<h3>Індустріальний район</h3>
-<p>О 15:03 було зафіксовано влучення реактивного дрона. Наслідки уточнюються.</p></div>]]></content:encoded>
-<enclosure url="https://pwg.sq.com.ua/upload/2026/07/02/20260702131809-432896ce.jpg" type="image/jpeg" length="0"/>
-<media:thumbnail url="https://pwg.sq.com.ua/upload/2026/07/02/20260702131809-432896ce.jpg"/>
-<media:content url="https://pwg.sq.com.ua/upload/2026/07/02/20260702131809-432896ce.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
