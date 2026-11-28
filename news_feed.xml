@@ -9,7 +9,7 @@
 <link>https://infocity.kharkiv.ua/</link>
 <description>Повний текст, світлини та вбудовані відео з харківських видань.</description>
 <language>uk</language>
-<lastBuildDate>Sat, 28 Nov 2026 09:28:27 +0000</lastBuildDate>
+<lastBuildDate>Sat, 28 Nov 2026 09:31:38 +0000</lastBuildDate>
 <ttl>5</ttl>
 <generator>pl-news-feed/1.0</generator>
 <atom:link href="https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml" rel="self" type="application/rss+xml"/>
@@ -7182,57 +7182,6 @@
 <enclosure url="https://www.sq.com.ua/img/news/2026/11/25/photo_2026-11-25_12_07_03-sq.jpeg" type="image/jpeg" length="0"/>
 <media:thumbnail url="https://www.sq.com.ua/img/news/2026/11/25/photo_2026-11-25_12_07_03-sq.jpeg"/>
 <media:content url="https://www.sq.com.ua/img/news/2026/11/25/photo_2026-11-25_12_07_03-sq.jpeg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-<title>Немає напруги: у Харківській області скасовують електрички та змінюють їх маршрути</title>
-<link>https://sq.com.ua/ukr/novini/25.11.2026/nemaje-naprugi-u-xarkivskii-oblasti-skasovuyut-elektricki-ta-zminyuyut-yix-marsruti</link>
-<guid isPermaLink="true">https://sq.com.ua/ukr/novini/25.11.2026/nemaje-naprugi-u-xarkivskii-oblasti-skasovuyut-elektricki-ta-zminyuyut-yix-marsruti</guid>
-<pubDate>Wed, 25 Nov 2026 09:29:00 +0000</pubDate>
-<dc:creator>Status Quo</dc:creator>
-<source url="https://sq.com.ua/ukr/novini/25.11.2026/nemaje-naprugi-u-xarkivskii-oblasti-skasovuyut-elektricki-ta-zminyuyut-yix-marsruti">Status Quo</source>
-<category>Харків</category>
-<category>extraction:ok</category>
-<description><![CDATA[<p><img alt="" src="https://pwg.sq.com.ua/upload/2026/11/19/20261119005057-216e70ad.jpg"/></p>
-<div><p>Через відсутність напруги в контактній мережі на ділянці Златопіль — Лозова «Укрзалізниця» змінює рух приміських поїздів на Харківщині. Частина поїздів курсуватиме скороченими маршрутами, кілька рейсів тимчасово скасовано.</p>
-<h3>24 і 25 листопада</h3>
-<ul>
-<li>№6508 Златопіль — Харків-Пасажирський курсує зі Златополя замість Біляївки, альтернатива — №6512 Герсеванівський — Харків-Пасажирський</li>
-<li>№6506 Златопіль — Харків-Пасажирський тимчасово скасовано, альтернатива — №6508 Златопіль — Харків-Пасажирський</li>
-</ul>
-<h3>25 і 26 листопада</h3>
-<ul>
-<li>№7001 Харків-Пасажирський — Златопіль курсує до Златополя замість Герсеванівського, альтернатива — №6525 Харків-Пасажирський — Герсеванівський</li>
-<li>№6529 Харків-Пасажирський — Златопіль курсує до Златополя замість Біляївки</li>
-<li>№6828 Герсеванівський — Златопіль тимчасово скасовано</li>
-</ul>
-<h3>26 і 27 листопада</h3>
-<ul>
-<li>№6508 Златопіль — Харків-Пасажирський курсує зі Златополя замість Біляївки</li>
-<li>№6506 Златопіль — Харків-Пасажирський тимчасово не курсуватиме</li>
-</ul>
-<p>Причину відсутності напруги на ділянці «Укрзалізниця» не уточнює. Водночас 20 листопада росіяни <a href="https://www.sq.com.ua/ukr/novini/20.11.2026/rf-vdarila-po-pidstanciyi-na-xarkivshhini-dvoje-energetikiv-u-likarni-takoz-zruinovana-silrada">вдарили</a> по енергетичному об'єкту в Біляївській громаді, тоді поранення отримали двоє працівників підстанції, а голова Харківської ОВА Олег Синєгубов повідомляв також про пошкоджену в Біляївці залізничну інфраструктуру.</p></div>]]></description>
-<content:encoded><![CDATA[<p><img alt="" src="https://pwg.sq.com.ua/upload/2026/11/19/20261119005057-216e70ad.jpg"/></p>
-<div><p>Через відсутність напруги в контактній мережі на ділянці Златопіль — Лозова «Укрзалізниця» змінює рух приміських поїздів на Харківщині. Частина поїздів курсуватиме скороченими маршрутами, кілька рейсів тимчасово скасовано.</p>
-<h3>24 і 25 листопада</h3>
-<ul>
-<li>№6508 Златопіль — Харків-Пасажирський курсує зі Златополя замість Біляївки, альтернатива — №6512 Герсеванівський — Харків-Пасажирський</li>
-<li>№6506 Златопіль — Харків-Пасажирський тимчасово скасовано, альтернатива — №6508 Златопіль — Харків-Пасажирський</li>
-</ul>
-<h3>25 і 26 листопада</h3>
-<ul>
-<li>№7001 Харків-Пасажирський — Златопіль курсує до Златополя замість Герсеванівського, альтернатива — №6525 Харків-Пасажирський — Герсеванівський</li>
-<li>№6529 Харків-Пасажирський — Златопіль курсує до Златополя замість Біляївки</li>
-<li>№6828 Герсеванівський — Златопіль тимчасово скасовано</li>
-</ul>
-<h3>26 і 27 листопада</h3>
-<ul>
-<li>№6508 Златопіль — Харків-Пасажирський курсує зі Златополя замість Біляївки</li>
-<li>№6506 Златопіль — Харків-Пасажирський тимчасово не курсуватиме</li>
-</ul>
-<p>Причину відсутності напруги на ділянці «Укрзалізниця» не уточнює. Водночас 20 листопада росіяни <a href="https://www.sq.com.ua/ukr/novini/20.11.2026/rf-vdarila-po-pidstanciyi-na-xarkivshhini-dvoje-energetikiv-u-likarni-takoz-zruinovana-silrada">вдарили</a> по енергетичному об'єкту в Біляївській громаді, тоді поранення отримали двоє працівників підстанції, а голова Харківської ОВА Олег Синєгубов повідомляв також про пошкоджену в Біляївці залізничну інфраструктуру.</p></div>]]></content:encoded>
-<enclosure url="https://pwg.sq.com.ua/upload/2026/11/19/20261119005057-216e70ad.jpg" type="image/jpeg" length="0"/>
-<media:thumbnail url="https://pwg.sq.com.ua/upload/2026/11/19/20261119005057-216e70ad.jpg"/>
-<media:content url="https://pwg.sq.com.ua/upload/2026/11/19/20261119005057-216e70ad.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
