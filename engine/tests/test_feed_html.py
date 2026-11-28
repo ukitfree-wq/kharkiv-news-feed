@@ -125,3 +125,13 @@ def test_keeps_automatic_og_as_lead_when_it_is_the_only_photo():
     assert out_lead == og
     assert og in clean
     assert images == [og]
+
+
+def test_drops_already_mirrored_automatic_og_file():
+    lead = "https://ukitfree-wq.github.io/kharkiv-news-feed/img/92f3ff56485ecbd9cd04.jpg"
+    og = "https://ukitfree-wq.github.io/kharkiv-news-feed/img/16f4f187930859366531.jpg"
+    html = f'<p>Text</p><p><img alt="" src="{og}"/></p>'
+    clean, out_lead, images = sanitize_feed_html(html, lead_image=lead)
+    assert out_lead == lead
+    assert og not in clean
+    assert all("16f4f187930859366531" not in u for u in images)

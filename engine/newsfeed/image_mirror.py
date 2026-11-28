@@ -33,7 +33,7 @@ from urllib.parse import urlparse
 import requests
 from bs4 import BeautifulSoup
 
-from newsfeed.feed_html import _unwrap_picture, image_stem, resolve_img_src
+from newsfeed.feed_html import _unwrap_picture, image_stem, is_social_card_image, resolve_img_src
 
 log = logging.getLogger(__name__)
 
@@ -238,6 +238,8 @@ class ImageMirror:
                 "lead_image": lead,
                 "images": list(images),
             }
+            _strip_social_cards_from_item(item)
+            html, lead, images = item["content_html"], item["lead_image"], item["images"]
             pending = [u for u in [lead, *images] if isinstance(u, str) and self._wanted(u)]
             if html:
                 pending.extend(u for u in _urls_in(html) if self._wanted(u))
@@ -302,6 +304,37 @@ class ImageMirror:
 
 def _urls_in(html: str) -> list[str]:
     return re.findall(r'https?://[^\s"\'<>]+', html or "")
+
+
+
+def _strip_social_cards_from_item(item: dict) -> None:
+    """Drop automatic-og (and already-mirrored copies) when a real photo exists."""
+    html = item.get("content_html") or ""
+    lead = item.get("lead_image") or ""
+    images = [u for u in (item.get("images") or []) if isinstance(u, str)]
+    has_real = any(u and not is_social_card_image(u) for u in [lead, *images]) or (
+        html and any(not is_social_card_image(u) and u.startswith("http") for u in _urls_in(html)
+                     if u.lower().endswith((".jpg", ".jpeg", ".png", ".webp", ".gif")) or "/img/" in u)
+    )
+    if not has_real:
+        return
+    if html:
+        soup = BeautifulSoup(html, "lxml")
+        body = soup.body or soup
+        changed = False
+        for img in list(body.find_all("img")):
+            if not is_social_card_image(img.get("src") or ""):
+                continue
+            parent = img.parent
+            img.decompose()
+            if parent is not None and parent.name in {"p", "figure", "div"} and not parent.get_text(strip=True) and not parent.find("img"):
+                parent.decompose()
+            changed = True
+        if changed:
+            item["content_html"] = "".join(str(c) for c in body.contents)
+    if lead and is_social_card_image(lead):
+        item["lead_image"] = next((u for u in images if u and not is_social_card_image(u)), "")
+    item["images"] = [u for u in images if u and not is_social_card_image(u)]
 
 
 def from_config(cfg: dict, repo_root: Path, output_feed: str) -> ImageMirror | None:

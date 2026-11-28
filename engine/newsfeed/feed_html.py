@@ -64,9 +64,23 @@ def prefer_raster_url(url: str) -> str:
 
 
 def is_social_card_image(url: str) -> bool:
-    """True for social-share crops such as Suspilne's automatic-og images."""
+    """True for social-share crops such as Suspilne's automatic-og images.
+
+    Also matches GitHub Pages copies of those cards that were mirrored before
+    we stopped appending automatic-og (filename = sha1(host + stem)[:20]).
+    """
     path = (urlparse(url or "").path or "").lower()
-    return "/images/generated/automatic-og/" in path or "/automatic-og/" in path
+    if "/images/generated/automatic-og/" in path or "/automatic-og/" in path:
+        return True
+    name = path.rsplit("/", 1)[-1]
+    return name in _MIRRORED_SOCIAL_CARD_FILES
+
+
+# Leftover automatic-og files copied to GitHub Pages on 2026-11-28 before
+# social cards were stripped from the body. Safe to drop when a lead exists.
+_MIRRORED_SOCIAL_CARD_FILES = {
+    "16f4f187930859366531.jpg",
+}
 
 
 def force_https(url: str) -> str:
