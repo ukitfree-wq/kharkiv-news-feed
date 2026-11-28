@@ -9,7 +9,7 @@
 <link>https://www.048.ua/</link>
 <description>Повний текст, світлини та вбудовані відео з одеських і обласних видань.</description>
 <language>uk</language>
-<lastBuildDate>Sat, 28 Nov 2026 14:16:17 +0000</lastBuildDate>
+<lastBuildDate>Sat, 28 Nov 2026 14:21:28 +0000</lastBuildDate>
 <ttl>5</ttl>
 <generator>pl-news-feed/1.0</generator>
 <atom:link href="https://ukitfree-wq.github.io/kharkiv-news-feed/odesa/news_feed.xml" rel="self" type="application/rss+xml"/>
@@ -55,6 +55,18 @@
 <enclosure url="https://s.048.ua/img/section/newsIcon/is/2/21c04cf1a15b65b368640d32cf00aef8_6b0aab9e6b8ae.webp" type="image/webp" length="0"/>
 <media:thumbnail url="https://s.048.ua/img/section/newsIcon/is/2/21c04cf1a15b65b368640d32cf00aef8_6b0aab9e6b8ae.webp"/>
 <media:content url="https://s.048.ua/img/section/newsIcon/is/2/21c04cf1a15b65b368640d32cf00aef8_6b0aab9e6b8ae.webp" medium="image" type="image/webp"/>
+</item>
+<item>
+<title>Сильний вітер до 17 м/с: на Одещині оголосили штормове попередження</title>
+<link>https://suspilne.media/odesa/1458751-silnij-viter-do-17-ms-na-odesini-ogolosili-stormove-poperedzenna</link>
+<guid isPermaLink="true">https://suspilne.media/odesa/1458751-silnij-viter-do-17-ms-na-odesini-ogolosili-stormove-poperedzenna</guid>
+<pubDate>Sat, 28 Nov 2026 14:10:38 +0000</pubDate>
+<dc:creator>Суспільне Одеса</dc:creator>
+<source url="https://suspilne.media/odesa/1458751-silnij-viter-do-17-ms-na-odesini-ogolosili-stormove-poperedzenna">Суспільне Одеса</source>
+<category>Одеса</category>
+<category>extraction:failed</category>
+<description><![CDATA[<p>[failed] </p>]]></description>
+<content:encoded><![CDATA[<p>[failed] </p>]]></content:encoded>
 </item>
 <item>
 <title>Позбавлений мандата депутат з Одеси купив квартиру в ОАЕ за 20 мільйонів</title>
