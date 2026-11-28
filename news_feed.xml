@@ -9,7 +9,7 @@
 <link>https://infocity.kharkiv.ua/</link>
 <description>Повний текст, світлини та вбудовані відео з харківських видань.</description>
 <language>uk</language>
-<lastBuildDate>Sat, 28 Nov 2026 10:11:19 +0000</lastBuildDate>
+<lastBuildDate>Sat, 28 Nov 2026 10:16:28 +0000</lastBuildDate>
 <ttl>5</ttl>
 <generator>pl-news-feed/1.0</generator>
 <atom:link href="https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml" rel="self" type="application/rss+xml"/>
@@ -7161,27 +7161,6 @@
 <enclosure url="https://mykharkov.info/wp-content/uploads/2026/11/1-93.webp" type="image/webp" length="0"/>
 <media:thumbnail url="https://mykharkov.info/wp-content/uploads/2026/11/1-93.webp"/>
 <media:content url="https://mykharkov.info/wp-content/uploads/2026/11/1-93.webp" medium="image" type="image/webp"/>
-</item>
-<item>
-<title>На Харківщині люди власними силами врятували місцевий ставок</title>
-<link>https://sq.com.ua/ukr/novini/25.11.2026/na-xarkivshhini-lyudi-vlasnimi-silami-vidremontuvali-vodostik-stavka</link>
-<guid isPermaLink="true">https://sq.com.ua/ukr/novini/25.11.2026/na-xarkivshhini-lyudi-vlasnimi-silami-vidremontuvali-vodostik-stavka</guid>
-<pubDate>Wed, 25 Nov 2026 10:16:00 +0000</pubDate>
-<dc:creator>Status Quo</dc:creator>
-<source url="https://sq.com.ua/ukr/novini/25.11.2026/na-xarkivshhini-lyudi-vlasnimi-silami-vidremontuvali-vodostik-stavka">Status Quo</source>
-<category>Харків</category>
-<category>extraction:ok</category>
-<description><![CDATA[<p><img alt="" src="https://www.sq.com.ua/img/news/2026/11/25/photo_2026-11-25_12_07_03-sq.jpeg"/></p>
-<div><p>Мешканці села Сидоренкове Валківської громади на толоці відремонтували водостічну систему місцевого ставка, яка понад рік не працювала належним чином. Про це повідомила Валківська міська рада.</p>
-<p>Для ремонту місцеві аграрні підприємства допомогли купити товстостінну металеву трубу, виконати зварювальні роботи й надали кран. Цемент, пісок і щебінь привезла комунальна установа «Благоустрій» Валківської міської ради. З металу виготовили трубу діаметром 75 сантиметрів і краном встановили її всередину старої труби діаметром 140 сантиметрів. Простір між ними заповнили бетоном: за день толоки мешканці замісили близько 5 кубометрів, тобто приблизно 12 тонн. Нова залізобетонна конструкція має утримувати потрібний рівень води у ставку.</p>
-<p>Мешканці сподіваються, що навесні ставок знову наповниться джерельною водою й стане місцем для риболовлі та відпочинку.</p></div>]]></description>
-<content:encoded><![CDATA[<p><img alt="" src="https://www.sq.com.ua/img/news/2026/11/25/photo_2026-11-25_12_07_03-sq.jpeg"/></p>
-<div><p>Мешканці села Сидоренкове Валківської громади на толоці відремонтували водостічну систему місцевого ставка, яка понад рік не працювала належним чином. Про це повідомила Валківська міська рада.</p>
-<p>Для ремонту місцеві аграрні підприємства допомогли купити товстостінну металеву трубу, виконати зварювальні роботи й надали кран. Цемент, пісок і щебінь привезла комунальна установа «Благоустрій» Валківської міської ради. З металу виготовили трубу діаметром 75 сантиметрів і краном встановили її всередину старої труби діаметром 140 сантиметрів. Простір між ними заповнили бетоном: за день толоки мешканці замісили близько 5 кубометрів, тобто приблизно 12 тонн. Нова залізобетонна конструкція має утримувати потрібний рівень води у ставку.</p>
-<p>Мешканці сподіваються, що навесні ставок знову наповниться джерельною водою й стане місцем для риболовлі та відпочинку.</p></div>]]></content:encoded>
-<enclosure url="https://www.sq.com.ua/img/news/2026/11/25/photo_2026-11-25_12_07_03-sq.jpeg" type="image/jpeg" length="0"/>
-<media:thumbnail url="https://www.sq.com.ua/img/news/2026/11/25/photo_2026-11-25_12_07_03-sq.jpeg"/>
-<media:content url="https://www.sq.com.ua/img/news/2026/11/25/photo_2026-11-25_12_07_03-sq.jpeg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
