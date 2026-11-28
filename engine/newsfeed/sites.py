@@ -209,6 +209,46 @@ SITE_PROFILES: dict[str, dict] = {
             ".comment-respond",
         ],
     },
+    "slk.kh.ua": {
+        "name": "Слобідський край",
+        "strip_comments": True,
+        "selectors": ["div.news", "div.news__content"],
+        "title_selector": "div.news__title h1, h1.title",
+        "lead_image_selectors": ["div.news__content > img"],
+        # og:image is the same photo under /storage/… (different path); keep the
+        # on-page lead so the enclosure matches the first <img>.
+        "skip_og_when_lead": True,
+        # JSON-LD datePublished is consistently two hours ahead of the visible
+        # time and the RSS pubDate (local 09:27 is stored as 11:27+02:00).
+        "ignore_page_date": True,
+        "link_image_selector": "div.popup-gallery a",
+        "skip_image_re": r"/img/social/",
+        # Subscribe pitches, including ones inserted mid-article. Do not
+        # truncate_at: later paragraphs are still part of the story.
+        "drop_text_re": (
+            r"^(вдячні кожному читачеві|кожен з вас допомагає нам|ваша підтримка)"
+            r"\b[^\n]{0,300}?спільнот"
+        ),
+        "remove": [
+            "div.breadcrumbs",
+            "div.news__title",
+            "div.news__share",
+            "div.news__info",
+            "div.specific-content__728x90",
+            "ins.adsbygoogle",
+            "div.about-author",
+            "div.tags",
+            "a.new-platform-link",
+            "div.news-platforms",
+            # «Читайте також» block after the body (not the body itself).
+            "div.text-editor-content:not(.news__content)",
+            "aside",
+            "nav",
+            "header",
+            "footer",
+            "script",
+        ],
+    },
     "suspilne.media": {
         "name": "Суспільне Харків",
         "selectors": [

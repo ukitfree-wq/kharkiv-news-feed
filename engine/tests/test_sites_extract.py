@@ -3,11 +3,16 @@
 from bs4 import BeautifulSoup
 
 from newsfeed.extract import (
+    _abs,
+    _attr_str,
     _collect_images,
+    _drop_text_blocks,
     _lead_images,
     _pick_body,
+    _profile_image_ok,
     _strip_boilerplate,
     _strip_junk,
+    _truncate_at,
     image_url,
     serialize_body,
 )
@@ -20,7 +25,20 @@ def _extract(html: str, url: str) -> tuple[str, list[str], str]:
     body = _pick_body(soup, profile)
     assert body is not None, f"no body for {url}"
     _strip_junk(body, profile.get("remove") or [])
+    if profile.get("link_image_selector"):
+        for a in body.select(profile["link_image_selector"]):
+            href = _abs(_attr_str(a.get("href")), url)
+            img = a.find("img")
+            if img is not None and href:
+                img.attrs = {"src": href, "alt": img.get("alt") or ""}
+    _truncate_at(body, profile.get("truncate_at_re"))
+    _drop_text_blocks(body, profile.get("drop_text_re"))
     _strip_boilerplate(body)
+    if profile.get("skip_image_re"):
+        for img in list(body.find_all("img")):
+            src = image_url(img, url)
+            if not _profile_image_ok(src, profile):
+                img.decompose()
     lead = _lead_images(soup, profile, url)
     images = list(lead)
     for src in _collect_images(body, url):
@@ -212,3 +230,88 @@ def test_title_dedup_skips_conflicting_calendar_dates():
     match, reason = _choose_existing_match(same_outage, recent, 87, 0.58)
     assert reason == "duplicate_title"
     assert "30 листопада" in (match["title"] if match else "")
+
+
+def test_slk_strips_boilerplate_keeps_gallery_and_embed():
+    html = """
+    <html><head>
+      <meta property="og:image" content="/storage/13/70/abc.jpeg">
+      <meta property="og:site_name" content="Слобідський край">
+    </head><body>
+      <div class="news-page__main main-content">
+        <div class="breadcrumbs">Головна / Новини</div>
+        <div class="news">
+          <div class="news__title"><h1 class="title">Атака безпілотників на Лозівську громаду</h1></div>
+          <div>
+            <div class="news__caption"><div class="news__info"><span class="date">28.11.2026</span></div></div>
+            <div class="news__share"><a class="a2a_button_telegram">Share</a></div>
+          </div>
+          <div class="news__content text-editor-content">
+            <img alt="Наслідки обстрілу" src="/storage_cache/41/29/lead_w694h0.jpeg">
+            <small class="news__image__title">Наслідки російського обстрілу / Фото: ОВА</small>
+            <div class="text-editor-content__styled"><p><em>У Лозівській громаді постраждали п’ятеро людей.</em></p></div>
+            <div class="specific-content__728x90"><ins class="adsbygoogle"></ins></div>
+            <p><span>Про це повідомляє медіа «Слобідський край».</span></p>
+            <p><img alt="Інфографіка" src="https://www.slk.kh.ua/content/2026/11/18/infographic.jpg"></p>
+            <p><iframe src="https://www.youtube.com/embed/BSt6by4y7yQ" title="plot" width="361" height="642"></iframe></p>
+            <div class="news__content text-editor-content">
+              <p><em><strong>Ваша підтримка – запорука нашої щоденної праці. Ставайте частиною
+              <a href="https://www.slk.kh.ua/community.html">спільноти «Слобідського краю»</a>.</strong></em></p>
+            </div>
+            <p>У старостинському окрузі допомагають літнім людям заготовляти дрова.</p>
+            <p><em>Вдячні кожному читачеві «Слобідського краю» за довіру та підтримку. Приєднуйтесь до читацької
+            <a href="https://www.slk.kh.ua/community.html">спільноти «Слобідського краю»</a>.</em></p>
+          </div>
+          <div class="col-2 popup-gallery">
+            <a href="/storage_cache/78/82/gal_w1920h0.webp">
+              <img src="/storage_cache/78/82/gal_w323h215.webp">
+            </a>
+          </div>
+          <div class="text-editor-content">
+            <p><em><strong>Читайте також:</strong>
+              <a href="https://www.slk.kh.ua/news/other.html">Інша новина про Харків</a></em></p>
+          </div>
+          <div class="about-author">
+            <div class="about-author__avatar">
+              <img src="/storage/22/41/author.jpeg" width="70" height="70" alt="">
+            </div>
+            <div class="tags"><a href="/tags/x">#війна</a></div>
+          </div>
+          <a href="https://t.me/SlobKray" class="new-platform-link">
+            <span class="new-platform-link__text">Оперативні новини читайте в нашому Telegram</span>
+            <img src="/img/social/new-telegram.svg" class="new-platform-link__icon" alt="">
+          </a>
+        </div>
+      </div>
+    </body></html>
+    """
+    url = "https://www.slk.kh.ua/oblast-online/lozova/ataka-bezpilotnikiv.html"
+    out, images, text = _extract(html, url)
+    assert "постраждали п’ятеро людей" in text
+    assert "допомагають літнім людям заготовляти дрова" in text
+    assert "Наслідки російського обстрілу" in text
+    assert "Ваша підтримка" not in text
+    assert "Вдячні кожному" not in text
+    assert "Приєднуйтесь" not in text
+    assert "Читайте також" not in out
+    assert "Інша новина про Харків" not in text
+    assert "Оперативні новини" not in text
+    assert "Telegram" not in text
+    assert "Головна / Новини" not in text
+    assert "#війна" not in text
+    lead = "https://www.slk.kh.ua/storage_cache/41/29/lead_w694h0.jpeg"
+    assert images[0] == lead
+    assert "https://www.slk.kh.ua/content/2026/11/18/infographic.jpg" in images
+    assert "https://www.slk.kh.ua/storage_cache/78/82/gal_w1920h0.webp" in images
+    assert all("w323h215" not in u for u in images)
+    assert all("author.jpeg" not in u for u in images)
+    assert all("/storage/13/70/abc.jpeg" not in u for u in images)
+    assert all("/img/social/" not in u for u in images)
+    assert 'src="https://www.youtube.com/embed/BSt6by4y7yQ"' in out
+    assert lead in out
+    first_img = BeautifulSoup(out, "lxml").find("img")
+    assert first_img is not None and first_img.get("src") == lead
+    prof = profile_for(url)
+    assert prof.get("name") == "Слобідський край"
+    assert prof.get("ignore_page_date") is True
+    assert profile_for("https://slk.kh.ua/news/x.html").get("name") == "Слобідський край"

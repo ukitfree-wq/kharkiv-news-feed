@@ -63,6 +63,13 @@ feeds:
     category: Харків
     name: АТН
 
+  - id: slk
+    url: https://www.slk.kh.ua/rss.xml
+    enabled: true
+    category: Харків
+    name: Слобідський край
+
+
   # --- Disabled examples (Google News Poland) ---
   # Swap enabled flags (and region in config.yaml) to use these instead.
   - id: gn-pl-top
