@@ -4,6 +4,7 @@ feeds_file: feeds.yaml
 # Editable list of place-name forms; an item is kept only if its title
 # contains at least one of these as a whole word.
 title_keywords_file: title_keywords.txt
+title_keyword_guards_file: title_guards.txt
 
 region:
   language: uk
