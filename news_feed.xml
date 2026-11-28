@@ -9,10 +9,45 @@
 <link>https://infocity.kharkiv.ua/</link>
 <description>Повний текст, світлини та вбудовані відео з харківських видань.</description>
 <language>uk</language>
-<lastBuildDate>Sat, 28 Nov 2026 06:06:05 +0000</lastBuildDate>
+<lastBuildDate>Sat, 28 Nov 2026 06:11:21 +0000</lastBuildDate>
 <ttl>5</ttl>
 <generator>pl-news-feed/1.0</generator>
 <atom:link href="https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml" rel="self" type="application/rss+xml"/>
+<item>
+<title>У Харкові вранці лунали вибухи: що відомо</title>
+<link>https://atn.ua/kharkiv/u-kharkovi-vrantsi-lunaly-vybukhy-shcho-vidomo-532011</link>
+<guid isPermaLink="true">https://atn.ua/kharkiv/u-kharkovi-vrantsi-lunaly-vybukhy-shcho-vidomo-532011</guid>
+<pubDate>Sat, 28 Nov 2026 06:10:20 +0000</pubDate>
+<dc:creator>АТН</dc:creator>
+<source url="https://atn.ua/kharkiv/u-kharkovi-vrantsi-lunaly-vybukhy-shcho-vidomo-532011">АТН</source>
+<category>Харків</category>
+<category>extraction:ok</category>
+<description><![CDATA[<p><img alt="" src="https://atn.ua/assets/uploads/2026/03/ia032-1.jpg"/></p>
+<div>
+<p>Вранці окупанти завдали ударів по Харкову.</p>
+<p>Про це<a href="https://t.me/ihor_terekhov/5083"> повідомив </a>мер Харкова Ігор Терехов.</p>
+<p>О 5:45 росіяни вдарили по Немишлянському району.</p>
+<p>«У Немишлянському районі, внаслідок влучання дрону, пожежа», – написав Терехов у Телеграм.</p>
+<p>О 7:54 у Харкові знову лунали вибухи.</p>
+<p>За даними Терехова, росіяни завдали удару по Основʼянському району.</p>
+<p>Усі наслідки уточнюються.</p>
+<!-- AI CONTENT END 2 -->
+</div>]]></description>
+<content:encoded><![CDATA[<p><img alt="" src="https://atn.ua/assets/uploads/2026/03/ia032-1.jpg"/></p>
+<div>
+<p>Вранці окупанти завдали ударів по Харкову.</p>
+<p>Про це<a href="https://t.me/ihor_terekhov/5083"> повідомив </a>мер Харкова Ігор Терехов.</p>
+<p>О 5:45 росіяни вдарили по Немишлянському району.</p>
+<p>«У Немишлянському районі, внаслідок влучання дрону, пожежа», – написав Терехов у Телеграм.</p>
+<p>О 7:54 у Харкові знову лунали вибухи.</p>
+<p>За даними Терехова, росіяни завдали удару по Основʼянському району.</p>
+<p>Усі наслідки уточнюються.</p>
+<!-- AI CONTENT END 2 -->
+</div>]]></content:encoded>
+<enclosure url="https://atn.ua/assets/uploads/2026/03/ia032-1.jpg" type="image/jpeg" length="0"/>
+<media:thumbnail url="https://atn.ua/assets/uploads/2026/03/ia032-1.jpg"/>
+<media:content url="https://atn.ua/assets/uploads/2026/03/ia032-1.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
 <title>Погода у Харкові 28 листопада : вдень до −1°, без дощу</title>
 <link>https://mykharkov.info/news/pohoda-u-kharkovi-28-lystopada-45318.html</link>
