@@ -86,10 +86,13 @@ feed_self_link: "https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml"
 
 # Images on these hosts are copied next to the feed on GitHub Pages (new items
 # only) because the hosts refuse WordPress importers: cdn4.suspilne.media answers
-# 403 to an empty User-Agent, od-news.com and 2day.kh.ua to a foreign Referer.
+# 403 to an empty User-Agent, od-news.com and 2day.kh.ua to a foreign Referer,
+# and 1svobodnyi.kh.ua cannot fetch objectiv.tv / www.objectiv.tv (likely a
+# hosting IP block; the images themselves return 200 from other networks).
 # See engine/newsfeed/image_mirror.py. Every other image keeps its original URL.
+# The copied lead becomes the RSS enclosure and the first <img> in the body.
 image_mirror:
-  hosts: [cdn4.suspilne.media, od-news.com, 2day.kh.ua]
+  hosts: [cdn4.suspilne.media, od-news.com, 2day.kh.ua, objectiv.tv, www.objectiv.tv]
   public_dir: img
   base_url: "https://ukitfree-wq.github.io/kharkiv-news-feed/img/"
 

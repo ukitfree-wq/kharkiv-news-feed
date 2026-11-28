@@ -67,3 +67,45 @@ def test_finalize_keeps_only_referenced_and_reuses_published(tmp_path):
     m.finalize([{"content_html": f'<img src="{url}"/>', "lead_image": url, "images_json": "[]"}])
     assert sorted(p.name for p in (tmp_path / "stage").iterdir()) == [f"{stem}.jpg"]
     assert (tmp_path / "stage" / f"{stem}.jpg").read_bytes() == b"OLD"
+
+
+def test_objectiv_lead_and_body_images_are_copied(tmp_path):
+    lead = "https://www.objectiv.tv/wp-content/uploads/2026/11/lead.webp"
+    body = "https://www.objectiv.tv/wp-content/uploads/2026/11/inside.jpg"
+    apex = "https://objectiv.tv/wp-content/uploads/2026/11/apex.jpg"
+    m, calls = _mirror(
+        tmp_path,
+        {
+            lead: _Resp(200, "image/webp", b"WEBP"),
+            body: _Resp(200, "image/jpeg", b"JPEG"),
+            apex: _Resp(200, "image/jpeg", b"APEX"),
+        },
+    )
+    m.hosts = {"objectiv.tv", "www.objectiv.tv"}
+    item = {
+        "canonical_url": "https://www.objectiv.tv/uk/story/",
+        "content_html": f'<img src="{lead}" alt="Lead"/><p>text</p><img src="{body}" alt="Inside"/>',
+        "lead_image": lead,
+        "images": [lead, body, apex],
+    }
+    m.apply(item)
+    new_lead = item["lead_image"]
+    assert new_lead.startswith("https://x.github.io/f/img/") and new_lead.endswith(".webp")
+    assert f'src="{new_lead}"' in item["content_html"]
+    assert "www.objectiv.tv/wp-content" not in item["content_html"]
+    assert all(u.startswith("https://x.github.io/f/img/") for u in item["images"])
+    # first body <img> is the copied lead
+    from bs4 import BeautifulSoup
+    first = BeautifulSoup(item["content_html"], "lxml").find("img")
+    assert first is not None and first.get("src") == new_lead
+    assert {u for u, _ in calls} == {lead, body, apex}
+
+
+def test_kharkiv_config_lists_objectiv_odesa_does_not():
+    from newsfeed.config import ROOT, load_config
+    kh = load_config(ROOT / "config.yaml")
+    hosts = [h.lower() for h in (kh.get("image_mirror") or {}).get("hosts") or []]
+    assert "objectiv.tv" in hosts and "www.objectiv.tv" in hosts
+    odesa = load_config(ROOT / "regions" / "odesa" / "config.yaml")
+    oh = [h.lower() for h in (odesa.get("image_mirror") or {}).get("hosts") or []]
+    assert "objectiv.tv" not in oh and "www.objectiv.tv" not in oh
