@@ -9,7 +9,7 @@
 <link>https://infocity.kharkiv.ua/</link>
 <description>Повний текст, світлини та вбудовані відео з харківських видань.</description>
 <language>uk</language>
-<lastBuildDate>Sat, 28 Nov 2026 11:31:54 +0000</lastBuildDate>
+<lastBuildDate>Sat, 28 Nov 2026 11:36:27 +0000</lastBuildDate>
 <ttl>5</ttl>
 <generator>pl-news-feed/1.0</generator>
 <atom:link href="https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml" rel="self" type="application/rss+xml"/>
@@ -7189,27 +7189,6 @@
 <enclosure url="https://pwg.sq.com.ua/upload/2026/07/19/20260719081910-0b0acb61.jpg" type="image/jpeg" length="0"/>
 <media:thumbnail url="https://pwg.sq.com.ua/upload/2026/07/19/20260719081910-0b0acb61.jpg"/>
 <media:content url="https://pwg.sq.com.ua/upload/2026/07/19/20260719081910-0b0acb61.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-<title>Частина Харкова 25 листопада залишилась без світла, транспорт ходить з перебоями</title>
-<link>https://sq.com.ua/ukr/novini/25.11.2026/castina-xarkova-25-listopada-zalisilas-bez-svitla-transport-xodit-z-pereboyami</link>
-<guid isPermaLink="true">https://sq.com.ua/ukr/novini/25.11.2026/castina-xarkova-25-listopada-zalisilas-bez-svitla-transport-xodit-z-pereboyami</guid>
-<pubDate>Wed, 25 Nov 2026 11:34:00 +0000</pubDate>
-<dc:creator>Status Quo</dc:creator>
-<source url="https://sq.com.ua/ukr/novini/25.11.2026/castina-xarkova-25-listopada-zalisilas-bez-svitla-transport-xodit-z-pereboyami">Status Quo</source>
-<category>Харків</category>
-<category>extraction:ok</category>
-<description><![CDATA[<p><img alt="" src="https://pwg.sq.com.ua/upload/2026/07/14/20260714111908-88e0edaf.jpg"/></p>
-<div><p>25 листопада в Харкові частина споживачів залишилася без світла, повідомили в «Харківобленерго». Через проблеми з енергопостачанням затримується й міський наземний електротранспорт, повідомили в міській раді.</p>
-<p>Енергетики працюють над відновленням електропостачання. Після того як світло повернеться, мешканців просять не вмикати одразу всі побутові прилади, щоб не перевантажити мережу, та пам'ятати про правила електробезпеки.</p>
-<p>Зранку 25 листопада РФ двічі вдарила по Слобідському району Харкова ракетами С-8000 «Бандероль», повідомив міський голова Ігор Терехов. Перший удар стався близько 11:10, другий — близько 12:45. Після другого удару харківʼяни почали повідомляти про перебої зі світлом. Чи пов'язані знеструмлення з цими ударами, енергетики не уточнюють.</p></div>]]></description>
-<content:encoded><![CDATA[<p><img alt="" src="https://pwg.sq.com.ua/upload/2026/07/14/20260714111908-88e0edaf.jpg"/></p>
-<div><p>25 листопада в Харкові частина споживачів залишилася без світла, повідомили в «Харківобленерго». Через проблеми з енергопостачанням затримується й міський наземний електротранспорт, повідомили в міській раді.</p>
-<p>Енергетики працюють над відновленням електропостачання. Після того як світло повернеться, мешканців просять не вмикати одразу всі побутові прилади, щоб не перевантажити мережу, та пам'ятати про правила електробезпеки.</p>
-<p>Зранку 25 листопада РФ двічі вдарила по Слобідському району Харкова ракетами С-8000 «Бандероль», повідомив міський голова Ігор Терехов. Перший удар стався близько 11:10, другий — близько 12:45. Після другого удару харківʼяни почали повідомляти про перебої зі світлом. Чи пов'язані знеструмлення з цими ударами, енергетики не уточнюють.</p></div>]]></content:encoded>
-<enclosure url="https://pwg.sq.com.ua/upload/2026/07/14/20260714111908-88e0edaf.jpg" type="image/jpeg" length="0"/>
-<media:thumbnail url="https://pwg.sq.com.ua/upload/2026/07/14/20260714111908-88e0edaf.jpg"/>
-<media:content url="https://pwg.sq.com.ua/upload/2026/07/14/20260714111908-88e0edaf.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
