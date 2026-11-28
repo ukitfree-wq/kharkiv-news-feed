@@ -9,7 +9,7 @@
 <link>https://infocity.kharkiv.ua/</link>
 <description>Повний текст, світлини та вбудовані відео з харківських видань.</description>
 <language>uk</language>
-<lastBuildDate>Sat, 28 Nov 2026 15:12:00 +0000</lastBuildDate>
+<lastBuildDate>Sat, 28 Nov 2026 15:16:38 +0000</lastBuildDate>
 <ttl>5</ttl>
 <generator>pl-news-feed/1.0</generator>
 <atom:link href="https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml" rel="self" type="application/rss+xml"/>
@@ -7141,45 +7141,6 @@
 <media:thumbnail url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/4e8b57dca2df24365e3b.jpg"/>
 <media:content url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/4e8b57dca2df24365e3b.jpg" medium="image" type="image/jpeg"/>
 <media:content url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/ba96704a57bfe5f2db89.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-<title>У харківському ЦНАП запроваджено нову послугу</title>
-<link>https://sq.com.ua/ukr/korisno_znati/25.11.2026/u-xarkivskomu-cnap-zaprovadzeno-novu-poslugu</link>
-<guid isPermaLink="true">https://sq.com.ua/ukr/korisno_znati/25.11.2026/u-xarkivskomu-cnap-zaprovadzeno-novu-poslugu</guid>
-<pubDate>Wed, 25 Nov 2026 15:13:00 +0000</pubDate>
-<dc:creator>Status Quo</dc:creator>
-<source url="https://sq.com.ua/ukr/korisno_znati/25.11.2026/u-xarkivskomu-cnap-zaprovadzeno-novu-poslugu">Status Quo</source>
-<category>Харків</category>
-<category>extraction:ok</category>
-<description><![CDATA[<p><img alt="" src="https://www.sq.com.ua/img/news/2026/11/25/photo_2026-11-25_15-15-06.jpg"/></p>
-<div><p>У харківському ЦНАП запроваджено нову послугу — оформлення витягу про несудимість, зокрема з апостилем.</p>
-<h3>Для чого це потрібно</h3>
-<p>Документ може знадобитися для:</p>
-<ul>
-<li>працевлаштування;</li>
-<li>навчання за кордоном;</li>
-<li>оформлення посвідки на проживання тощо.</li>
-</ul>
-<h3>Як скористатися послугою</h3>
-<p>Щоб скористатися послугою, необхідно особисто звернутися до будь-якого центру незалежно від місця реєстрації та подати заяву. При собі потрібно мати паспорт і РНОКПП.</p>
-<p>Також витяг можна замовити онлайн через портал або застосунок «Дія» та сервіс МВС «Єдине вікно громадян».</p>
-<p>Джерело: <a href="https://t.me/dozvil_kharkiv/1826">ЦНАП Харкова</a></p></div>]]></description>
-<content:encoded><![CDATA[<p><img alt="" src="https://www.sq.com.ua/img/news/2026/11/25/photo_2026-11-25_15-15-06.jpg"/></p>
-<div><p>У харківському ЦНАП запроваджено нову послугу — оформлення витягу про несудимість, зокрема з апостилем.</p>
-<h3>Для чого це потрібно</h3>
-<p>Документ може знадобитися для:</p>
-<ul>
-<li>працевлаштування;</li>
-<li>навчання за кордоном;</li>
-<li>оформлення посвідки на проживання тощо.</li>
-</ul>
-<h3>Як скористатися послугою</h3>
-<p>Щоб скористатися послугою, необхідно особисто звернутися до будь-якого центру незалежно від місця реєстрації та подати заяву. При собі потрібно мати паспорт і РНОКПП.</p>
-<p>Також витяг можна замовити онлайн через портал або застосунок «Дія» та сервіс МВС «Єдине вікно громадян».</p>
-<p>Джерело: <a href="https://t.me/dozvil_kharkiv/1826">ЦНАП Харкова</a></p></div>]]></content:encoded>
-<enclosure url="https://www.sq.com.ua/img/news/2026/11/25/photo_2026-11-25_15-15-06.jpg" type="image/jpeg" length="0"/>
-<media:thumbnail url="https://www.sq.com.ua/img/news/2026/11/25/photo_2026-11-25_15-15-06.jpg"/>
-<media:content url="https://www.sq.com.ua/img/news/2026/11/25/photo_2026-11-25_15-15-06.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
