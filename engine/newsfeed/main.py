@@ -536,7 +536,12 @@ def main(argv: list[str] | None = None) -> int:
         item["minhash"] = content_minhash(item.get("content_text") or "")
 
         page_dt = parse_datetime(item.get("page_published_at"), default_tz=tz)
-        feed_dt = parse_datetime(item.get("feed_published_at") or item.get("feed_published_raw"), default_tz=tz)
+        # feed_published_at is to_utc_naive() output (UTC, no offset). Parsing it
+        # with the region zone would shift the time by the UTC offset and drop
+        # in-window items after scrape, especially when ignore_page_date is set.
+        feed_dt = parse_datetime(item.get("feed_published_at"), default_tz=timezone.utc)
+        if feed_dt is None:
+            feed_dt = parse_datetime(item.get("feed_published_raw"), default_tz=tz)
         # Prefer the page published time when we have it.
         chosen_dt = page_dt or feed_dt
         if chosen_dt is not None:

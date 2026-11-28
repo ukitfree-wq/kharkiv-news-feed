@@ -315,3 +315,23 @@ def test_slk_strips_boilerplate_keeps_gallery_and_embed():
     assert prof.get("name") == "Слобідський край"
     assert prof.get("ignore_page_date") is True
     assert profile_for("https://slk.kh.ua/news/x.html").get("name") == "Слобідський край"
+
+
+def test_utc_naive_feed_timestamp_stays_fresh_after_scrape():
+    """feed_published_at is stored as UTC without an offset; it must not be
+    re-read as Europe/Kyiv or an in-window slk item is dropped after scrape."""
+    from datetime import datetime, timezone
+    from zoneinfo import ZoneInfo
+
+    from newsfeed.dates import freshness_of, parse_datetime, to_utc_naive
+
+    kyiv = ZoneInfo("Europe/Kyiv")
+    now = datetime(2026, 11, 28, 7, 52, tzinfo=timezone.utc)  # 09:52 Kyiv
+    raw = "Sat, 28 Nov 2026 09:27:00 +0200"
+    stored = to_utc_naive(parse_datetime(raw, default_tz=kyiv))
+    assert stored == "2026-11-28 07:27:00"
+    wrong = parse_datetime(stored, default_tz=kyiv)
+    right = parse_datetime(stored, default_tz=timezone.utc)
+    assert freshness_of(wrong, now, max_age_minutes=30)["status"] == "too_old"
+    assert freshness_of(right, now, max_age_minutes=30)["status"] == "fresh"
+    assert freshness_of(parse_datetime(raw, default_tz=kyiv), now, max_age_minutes=30)["status"] == "fresh"
