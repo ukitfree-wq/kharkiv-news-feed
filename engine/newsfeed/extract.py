@@ -813,14 +813,12 @@ def extract_article(
             if src not in images:
                 images.append(src)
     og_ok = _good_for(og_image, profile) if profile.get("allow_image_re") else _good_image(og_image)
-    if og_ok and og_image not in images:
-        # og:image often a crop of the lead; put it first only if we have no lead yet
-        if not lead_from_profile:
-            images.insert(0, og_image)
-        elif not profile.get("skip_og_when_lead"):
-            # Profile option skip_og_when_lead: the og:image is only a social-card
-            # crop of the lead photo the profile already found (intent.press).
-            images.append(og_image)
+    if og_ok and og_image not in images and not images:
+        # Use og:image only as the lead when the page has no other photo.
+        # Never append a social-card crop (Suspilne automatic-og) at the end
+        # of an article that already has a lead or body image — _ensure_media
+        # would otherwise add a trailing <p><img>.
+        images.insert(0, og_image)
 
     embeds = classify_embeds(body) if body is not None else []
     # Also look in the selected body only (not footer share icons)

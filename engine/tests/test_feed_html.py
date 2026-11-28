@@ -3,6 +3,7 @@ import re
 from newsfeed.feed_html import (
     image_stem,
     prefer_raster_url,
+    is_social_card_image,
     sanitize_feed_html,
     youtube_id,
     youtube_watch_url,
@@ -103,3 +104,24 @@ if __name__ == "__main__":
             f()
             print("ok", fn)
     print("all passed")
+
+def test_drops_trailing_automatic_og_when_lead_exists():
+    lead = "https://cdn4.suspilne.media/images/resize/1040x0.1/905ba4a2b79b414d.jpg"
+    og = "https://cdn4.suspilne.media/images/generated/automatic-og/v1/2f/2f5040bac674fec381b6c351ea49a5d589f310263e0ceb13fb064ae3cfbb78c8.jpg"
+    html = f'<p>Text</p><p><img alt="" src="{og}"/></p>'
+    clean, out_lead, images = sanitize_feed_html(html, lead_image=lead)
+    assert out_lead == lead
+    assert og not in clean
+    assert all("automatic-og" not in u for u in images)
+    assert lead in clean
+    assert is_social_card_image(og)
+    assert not is_social_card_image(lead)
+
+
+def test_keeps_automatic_og_as_lead_when_it_is_the_only_photo():
+    og = "https://cdn4.suspilne.media/images/generated/automatic-og/v1/2f/2f5040bac674fec381b6c351ea49a5d589f310263e0ceb13fb064ae3cfbb78c8.jpg"
+    html = f'<p>No other photos.</p><p><img alt="" src="{og}"/></p>'
+    clean, out_lead, images = sanitize_feed_html(html, lead_image="")
+    assert out_lead == og
+    assert og in clean
+    assert images == [og]

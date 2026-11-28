@@ -59,6 +59,7 @@ from newsfeed.store import (
     record_run,
     seen_guids,
     seen_source_urls,
+    update_article,
 )
 
 log = logging.getLogger("newsfeed")
@@ -712,12 +713,34 @@ def main(argv: list[str] | None = None) -> int:
             purge["restored"],
         )
 
-    rows = feed_candidates(
+    rows = [dict(r) for r in feed_candidates(
         conn,
         max_age_days=int(retention["max_age_days"]),
         max_items=int(retention["max_items"]),
         include_failed=bool(extract_cfg["include_failed"]),
-    )
+    )]
+    if mirror is not None:
+        try:
+            bf = mirror.backfill(rows)
+            updated = 0
+            for row in rows:
+                if row.pop("_mirror_backfilled", False):
+                    update_article(
+                        conn,
+                        row["id"],
+                        {
+                            "lead_image": row.get("lead_image") or "",
+                            "images_json": row.get("images_json") or "[]",
+                            "content_html": row.get("content_html") or "",
+                        },
+                    )
+                    updated += 1
+            if updated:
+                conn.commit()
+            stats["image_mirror_backfill_items"] = bf["items"]
+            stats["image_mirror_backfill_urls"] = bf["urls"]
+        except Exception as exc:
+            log.error("image mirror backfill failed: %s", exc)
     stats["feed_items"] = len(rows)
     stats["feed_ok"] = sum(1 for r in rows if r["extraction_status"] == "ok")
     stats["feed_not_ok"] = stats["feed_items"] - stats["feed_ok"]

@@ -109,3 +109,86 @@ def test_kharkiv_config_lists_objectiv_odesa_does_not():
     odesa = load_config(ROOT / "regions" / "odesa" / "config.yaml")
     oh = [h.lower() for h in (odesa.get("image_mirror") or {}).get("hosts") or []]
     assert "objectiv.tv" not in oh and "www.objectiv.tv" not in oh
+
+
+def test_retries_on_403_then_succeeds(tmp_path):
+    a = "https://cdn4.suspilne.media/images/resize/1040x0.1/lead.jpg"
+    replies = [_Resp(403, "text/html"), _Resp(403, "text/html"), _Resp(200, "image/jpeg", b"JPEG")]
+    m, calls = _mirror(tmp_path, {})
+    m.hosts = {"cdn4.suspilne.media", "suspilne.media"}
+    m.max_attempts = 4
+    m.backoff_seconds = 0.01
+    m.request_gap_seconds = 0
+    slept = []
+    m._sleep = slept.append
+
+    def get(url, headers=None, timeout=None, stream=None):
+        calls.append((url, headers, len(replies)))
+        return replies.pop(0)
+
+    m.session.get = get
+    item = {
+        "canonical_url": "https://suspilne.media/kharkiv/1/",
+        "content_html": f'<p><img src="{a}" alt="Lead"/></p>',
+        "lead_image": a,
+        "images": [a],
+    }
+    m.apply(item)
+    new = item["lead_image"]
+    assert new.startswith("https://x.github.io/f/img/") and new.endswith(".jpg")
+    assert a not in item["content_html"]
+    assert item["images"] == [new]
+    assert len(calls) == 3
+    assert slept  # backoff between failed attempts
+
+
+def test_retries_exhausted_keeps_original(tmp_path):
+    a = "https://cdn4.suspilne.media/images/resize/1040x0.1/x.jpg"
+    m, _ = _mirror(tmp_path, {a: _Resp(403, "text/html")})
+    m.max_attempts = 3
+    m.backoff_seconds = 0.01
+    m.request_gap_seconds = 0
+    m._sleep = lambda s: None
+    # session.get always returns the same 403
+    item = {"canonical_url": "https://suspilne.media/x/", "content_html": f'<img src="{a}"/>', "lead_image": a, "images": [a]}
+    m.apply(item)
+    assert item["lead_image"] == a and a in item["content_html"]
+    assert m.failed >= 1
+
+
+def test_backfill_rewrites_existing_item_without_touching_link(tmp_path):
+    a = "https://www.objectiv.tv/wp-content/uploads/2026/11/a.jpg"
+    m, _ = _mirror(tmp_path, {a: _Resp(200, "image/jpeg", b"OBJ")})
+    m.hosts = {"objectiv.tv", "www.objectiv.tv"}
+    m.request_gap_seconds = 0
+    row = {
+        "id": 42,
+        "guid": "https://www.objectiv.tv/uk/story/",
+        "canonical_url": "https://www.objectiv.tv/uk/story/",
+        "source_url": "https://www.objectiv.tv/uk/story/",
+        "content_html": f'<p><img src="{a}" alt="A"/></p>',
+        "lead_image": a,
+        "images_json": f'["{a}"]',
+    }
+    result = m.backfill([row])
+    assert result["items"] == 1 and result["urls"] == 1
+    assert row["guid"] == "https://www.objectiv.tv/uk/story/"
+    assert row["canonical_url"] == "https://www.objectiv.tv/uk/story/"
+    assert row["_mirror_backfilled"] is True
+    assert row["lead_image"].startswith("https://x.github.io/f/img/")
+    assert a not in row["content_html"]
+    assert "objectiv.tv/wp-content" not in row["lead_image"]
+
+
+def test_both_regions_list_suspilne_image_hosts():
+    from newsfeed.config import ROOT, load_config
+    kh = load_config(ROOT / "config.yaml")
+    od = load_config(ROOT / "regions" / "odesa" / "config.yaml")
+    for cfg, name in ((kh, "kharkiv"), (od, "odesa")):
+        hosts = [h.lower() for h in (cfg.get("image_mirror") or {}).get("hosts") or []]
+        assert "cdn4.suspilne.media" in hosts, name
+        assert "suspilne.media" in hosts, name
+    kh_hosts = [h.lower() for h in kh["image_mirror"]["hosts"]]
+    assert "objectiv.tv" in kh_hosts
+    od_hosts = [h.lower() for h in od["image_mirror"]["hosts"]]
+    assert "objectiv.tv" not in od_hosts and "www.objectiv.tv" not in od_hosts

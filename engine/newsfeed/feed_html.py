@@ -63,6 +63,12 @@ def prefer_raster_url(url: str) -> str:
     return url or ""
 
 
+def is_social_card_image(url: str) -> bool:
+    """True for social-share crops such as Suspilne's automatic-og images."""
+    path = (urlparse(url or "").path or "").lower()
+    return "/images/generated/automatic-og/" in path or "/automatic-og/" in path
+
+
 def force_https(url: str) -> str:
     if url.lower().startswith("http://"):
         parsed = urlparse(url)
@@ -430,6 +436,22 @@ def sanitize_feed_html(
             if image_stem(url) == stem and not _SIZE_SUFFIX_RE.search(urlparse(url).path):
                 lead_image = url
                 break
+
+    # Drop trailing/in-body social-card crops (Suspilne automatic-og) when the
+    # item already has a real lead or body photo. Keep the og image only when
+    # it is the sole photo, so it can still serve as the lead.
+    has_real_photo = any(src and not is_social_card_image(src) for src in (images + ([lead_image] if lead_image else [])))
+    if has_real_photo:
+        for img in list(body.find_all("img")):
+            if not is_social_card_image(img.get("src") or ""):
+                continue
+            parent = img.parent
+            img.decompose()
+            if parent and isinstance(parent, Tag) and parent.name in {"p", "figure", "div"} and _empty_element(parent):
+                parent.decompose()
+        if lead_image and is_social_card_image(lead_image):
+            lead_image = next((u for u in images if u and not is_social_card_image(u)), "")
+        images = [u for u in images if u and not is_social_card_image(u)]
 
     inner = "".join(str(c) for c in body.children).strip()
     inner_soup = BeautifulSoup(inner or "", "lxml")

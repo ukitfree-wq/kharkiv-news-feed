@@ -335,3 +335,56 @@ def test_utc_naive_feed_timestamp_stays_fresh_after_scrape():
     assert freshness_of(wrong, now, max_age_minutes=30)["status"] == "too_old"
     assert freshness_of(right, now, max_age_minutes=30)["status"] == "fresh"
     assert freshness_of(parse_datetime(raw, default_tz=kyiv), now, max_age_minutes=30)["status"] == "fresh"
+
+
+def test_suspilne_automatic_og_not_appended_when_article_has_photos():
+    """og:image social cards must not become a trailing <img> when a lead exists."""
+    from types import SimpleNamespace
+
+    from newsfeed.extract import _ensure_media, extract_article
+
+    og = "https://cdn4.suspilne.media/images/generated/automatic-og/v1/2f/2f5040bac674fec381b6c351ea49a5d589f310263e0ceb13fb064ae3cfbb78c8.jpg"
+    lead = "https://cdn4.suspilne.media/images/resize/1040x0.1/905ba4a2b79b414d.jpg"
+    html = f"""
+    <html><head>
+      <meta property="og:image" content="{og}">
+      <title>Як 102-річна жителька Харківщини пережила Голодомор</title>
+    </head><body>
+      <div class="l-c-md">
+        <img class="c-article-image" src="{lead}">
+      </div>
+      <div class="c-article-content">
+        <p>Жителька Люботина Єфросинія Ковалевська, якій цьогоріч виповнилося 102 роки,
+        розповіла про Голодомор і розкуркулення своєї родини радянською владою.
+        У 1930-х у сім’ї забрали олійницю, худобу та одяг, а батька відправили на покарання.
+        Пережити голод, за її словами, допомогли приховане зерно, польові трави та цукрові буряки.
+        Це речення додано, щоб набрати достатньо символів для порогу екстрактора і не піти
+        у trafilatura fallback, який міг би змішати розмітку.</p>
+      </div>
+    </body></html>
+    """
+
+    class _Resp:
+        status_code = 200
+        url = "https://suspilne.media/kharkiv/1456294-x/"
+        text = html
+        encoding = "utf-8"
+        apparent_encoding = "utf-8"
+
+    class _Sess:
+        def get(self, url, timeout=None, allow_redirects=None):
+            return _Resp()
+
+    item = extract_article(
+        "https://suspilne.media/kharkiv/1456294-x/",
+        _Sess(),
+        timeout=10,
+        min_text_chars=80,
+        fallback_title="t",
+    )
+    assert item["lead_image"] == lead
+    assert og not in (item.get("images") or [])
+    assert og not in (item.get("content_html") or "")
+    # And _ensure_media itself does not invent a trailing og tag if we do not pass it.
+    out = _ensure_media("<p>body</p>", [lead], lead)
+    assert og not in out
