@@ -9,7 +9,7 @@
 <link>https://infocity.kharkiv.ua/</link>
 <description>Повний текст, світлини та вбудовані відео з харківських видань.</description>
 <language>uk</language>
-<lastBuildDate>Sat, 28 Nov 2026 11:16:20 +0000</lastBuildDate>
+<lastBuildDate>Sat, 28 Nov 2026 11:21:44 +0000</lastBuildDate>
 <ttl>5</ttl>
 <generator>pl-news-feed/1.0</generator>
 <atom:link href="https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml" rel="self" type="application/rss+xml"/>
@@ -7210,25 +7210,6 @@
 <enclosure url="https://pwg.sq.com.ua/upload/2026/07/14/20260714111908-88e0edaf.jpg" type="image/jpeg" length="0"/>
 <media:thumbnail url="https://pwg.sq.com.ua/upload/2026/07/14/20260714111908-88e0edaf.jpg"/>
 <media:content url="https://pwg.sq.com.ua/upload/2026/07/14/20260714111908-88e0edaf.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-<title>Харків готується до Різдва: у сквері Сафарова з&apos;явилася 5-метрова ялина (фото)</title>
-<link>https://sq.com.ua/ukr/novini/25.11.2026/xarkiv-gotujetsya-do-rizdva-u-skveri-safarova-zyavilasya-nova-yalina-foto</link>
-<guid isPermaLink="true">https://sq.com.ua/ukr/novini/25.11.2026/xarkiv-gotujetsya-do-rizdva-u-skveri-safarova-zyavilasya-nova-yalina-foto</guid>
-<pubDate>Wed, 25 Nov 2026 11:20:00 +0000</pubDate>
-<dc:creator>Status Quo</dc:creator>
-<source url="https://sq.com.ua/ukr/novini/25.11.2026/xarkiv-gotujetsya-do-rizdva-u-skveri-safarova-zyavilasya-nova-yalina-foto">Status Quo</source>
-<category>Харків</category>
-<category>extraction:ok</category>
-<description><![CDATA[<p><img alt="" src="https://www.sq.com.ua/img/news/2026/11/25/tree1-sq.jpeg"/></p>
-<div><p>У сквері Сафарова в Харкові висадили нову п'ятиметрову ялину, її розмістили в самому центрі скверу. Фахівці СКП «Харківзеленбуд» уже готуються прикрасити дерево до різдвяних свят.</p>
-<p>Найближчими днями такі ж живі ялини з'являться й в інших районах міста, де їх також вберуть у святковий декор, повідомили на підприємстві.</p></div>]]></description>
-<content:encoded><![CDATA[<p><img alt="" src="https://www.sq.com.ua/img/news/2026/11/25/tree1-sq.jpeg"/></p>
-<div><p>У сквері Сафарова в Харкові висадили нову п'ятиметрову ялину, її розмістили в самому центрі скверу. Фахівці СКП «Харківзеленбуд» уже готуються прикрасити дерево до різдвяних свят.</p>
-<p>Найближчими днями такі ж живі ялини з'являться й в інших районах міста, де їх також вберуть у святковий декор, повідомили на підприємстві.</p></div>]]></content:encoded>
-<enclosure url="https://www.sq.com.ua/img/news/2026/11/25/tree1-sq.jpeg" type="image/jpeg" length="0"/>
-<media:thumbnail url="https://www.sq.com.ua/img/news/2026/11/25/tree1-sq.jpeg"/>
-<media:content url="https://www.sq.com.ua/img/news/2026/11/25/tree1-sq.jpeg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
