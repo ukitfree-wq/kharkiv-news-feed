@@ -9,7 +9,7 @@
 <link>https://infocity.kharkiv.ua/</link>
 <description>Повний текст, світлини та вбудовані відео з харківських видань.</description>
 <language>uk</language>
-<lastBuildDate>Sat, 28 Nov 2026 13:41:39 +0000</lastBuildDate>
+<lastBuildDate>Sat, 28 Nov 2026 13:46:40 +0000</lastBuildDate>
 <ttl>5</ttl>
 <generator>pl-news-feed/1.0</generator>
 <atom:link href="https://ukitfree-wq.github.io/kharkiv-news-feed/news_feed.xml" rel="self" type="application/rss+xml"/>
@@ -7264,42 +7264,6 @@
 <media:thumbnail url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/5e8cc0be42ccdb30a55e.jpg"/>
 <media:content url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/5e8cc0be42ccdb30a55e.jpg" medium="image" type="image/jpeg"/>
 <media:content url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/01bbea1018749baece54.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-<title>У лікарні на Харківщині чоловік викрав у пацієнта гаманець з грошима</title>
-<link>https://2day.kh.ua/ua/kharkow/na-kharkivshchyni-cholovik-vykrav-hroshi-u-patsiyenta-likarni</link>
-<guid isPermaLink="true">https://2day.kh.ua/ua/kharkow/na-kharkivshchyni-cholovik-vykrav-hroshi-u-patsiyenta-likarni</guid>
-<pubDate>Wed, 25 Nov 2026 13:44:00 +0000</pubDate>
-<dc:creator>Харків Тудей</dc:creator>
-<source url="https://2day.kh.ua/ua/kharkow/na-kharkivshchyni-cholovik-vykrav-hroshi-u-patsiyenta-likarni">Харків Тудей</source>
-<category>Харків</category>
-<category>extraction:ok</category>
-<description><![CDATA[<p><img alt="" src="https://ukitfree-wq.github.io/kharkiv-news-feed/img/5d5dc0de6e947152a05a.jpg"/></p>
-<div>
-<div> <div>
-<div><p><strong>У Берестині 35-річний чоловік украв гаманець із грошима у пацієнта міської лікарні. </strong></p>
-<p>Крадіжка сталася 17 листопада. Чоловік зайшов до лікарняної палати та відкрив тумбочку біля ліжка 56-річного пацієнта. Усередині він знайшов гаманець із грошима. </p>
-<p>Переконавшись, що ніхто не бачить його, чоловік сховав гаманець у кишеню куртки та вийшов із палати. Викрадені гроші він витратив, <a href="https://t.me/police_kh_region/60714">повідомили</a> в поліції Харківської області. У гаманці було 7 тисяч гривень.</p>
-<p>Слідчі повідомили 35-річному чоловіку про підозру за ч. 4 ст. 185 Кримінального кодексу України (крадіжка). Йому загрожує до восьми років позбавлення волі.</p></div>
-</div>
-</div>
-</div>
-<p><img alt="" src="https://ukitfree-wq.github.io/kharkiv-news-feed/img/f14ea87a978557bd452f.jpg"/></p>]]></description>
-<content:encoded><![CDATA[<p><img alt="" src="https://ukitfree-wq.github.io/kharkiv-news-feed/img/5d5dc0de6e947152a05a.jpg"/></p>
-<div>
-<div> <div>
-<div><p><strong>У Берестині 35-річний чоловік украв гаманець із грошима у пацієнта міської лікарні. </strong></p>
-<p>Крадіжка сталася 17 листопада. Чоловік зайшов до лікарняної палати та відкрив тумбочку біля ліжка 56-річного пацієнта. Усередині він знайшов гаманець із грошима. </p>
-<p>Переконавшись, що ніхто не бачить його, чоловік сховав гаманець у кишеню куртки та вийшов із палати. Викрадені гроші він витратив, <a href="https://t.me/police_kh_region/60714">повідомили</a> в поліції Харківської області. У гаманці було 7 тисяч гривень.</p>
-<p>Слідчі повідомили 35-річному чоловіку про підозру за ч. 4 ст. 185 Кримінального кодексу України (крадіжка). Йому загрожує до восьми років позбавлення волі.</p></div>
-</div>
-</div>
-</div>
-<p><img alt="" src="https://ukitfree-wq.github.io/kharkiv-news-feed/img/f14ea87a978557bd452f.jpg"/></p>]]></content:encoded>
-<enclosure url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/5d5dc0de6e947152a05a.jpg" type="image/jpeg" length="0"/>
-<media:thumbnail url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/5d5dc0de6e947152a05a.jpg"/>
-<media:content url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/5d5dc0de6e947152a05a.jpg" medium="image" type="image/jpeg"/>
-<media:content url="https://ukitfree-wq.github.io/kharkiv-news-feed/img/f14ea87a978557bd452f.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
